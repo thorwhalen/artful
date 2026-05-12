@@ -1,0 +1,4 @@
+artful.store
+============
+.. automodule:: artful.store
+   :members:

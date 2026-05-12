@@ -1,0 +1,8 @@
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   module_docs/artful
+   module_docs/artful/exports
+   module_docs/artful/schema
+   module_docs/artful/store

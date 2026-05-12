@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>artful.store &mdash; artful 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e3a6060d"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="artful.schema" href="schema.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            artful
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../artful.html">artful</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">artful.exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">artful.schema</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">artful.store</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#artful.store.StoryboardMetaBody"><code class="docutils literal notranslate"><span class="pre">StoryboardMetaBody</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#artful.store.StoryboardMetaBody.model_config"><code class="docutils literal notranslate"><span class="pre">StoryboardMetaBody.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.store.load_storyboard"><code class="docutils literal notranslate"><span class="pre">load_storyboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.store.panel_intervals_from_panels"><code class="docutils literal notranslate"><span class="pre">panel_intervals_from_panels()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.store.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">artful</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">artful.store</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/artful/store.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-artful.store">
+<span id="artful-store"></span><h1>artful.store<a class="headerlink" href="#module-artful.store" title="Link to this heading"></a></h1>
+<p>Round-trip a <code class="xref py py-class docutils literal notranslate"><span class="pre">Storyboard</span></code> through a lacing store.</p>
+<p>Persistence model:</p>
+<ul class="simple">
+<li><p>Each <code class="xref py py-class docutils literal notranslate"><span class="pre">PanelBody</span></code> is stored as a <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Annotation</span></code> whose
+<code class="docutils literal notranslate"><span class="pre">body</span></code> is the panel body, <code class="docutils literal notranslate"><span class="pre">body_schema_uri</span></code> is
+<code class="xref py py-data docutils literal notranslate"><span class="pre">PANEL_BODY_SCHEMA_URI</span></code>, <code class="docutils literal notranslate"><span class="pre">reference</span></code> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.MediaRef</span></code>
+(asset_id of the timeline + the panel’s interval), and <code class="docutils literal notranslate"><span class="pre">tier</span></code> is the
+storyboard title (or “storyboard” by default).</p></li>
+<li><p>The storyboard’s <code class="docutils literal notranslate"><span class="pre">style</span></code> and <code class="docutils literal notranslate"><span class="pre">aspect</span></code> (no per-panel interval) are
+stored as one <em>timeless</em> annotation tagged with the same tier name and a
+small distinct body schema URI.</p></li>
+</ul>
+<p>This way every adapter lacing already supports (TextGrid, EAF, JAMS, OTIO,
+WebVTT, Web Annotation, JAMS, Label Studio, …) can round-trip a storyboard
+unchanged. Apps add storyboard semantics by reading panels via
+<a class="reference internal" href="#artful.store.load_storyboard" title="artful.store.load_storyboard"><code class="xref py py-func docutils literal notranslate"><span class="pre">load_storyboard()</span></code></a>; the underlying lacing store stays the single SSOT.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="artful.store.StoryboardMetaBody">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">artful.store.</span></span><span class="sig-name descname"><span class="pre">StoryboardMetaBody</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'16:9'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/artful/store.html#StoryboardMetaBody"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.store.StoryboardMetaBody" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="artful.store.StoryboardMetaBody.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#artful.store.StoryboardMetaBody.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.store.load_storyboard">
+<span class="sig-prename descclassname"><span class="pre">artful.store.</span></span><span class="sig-name descname"><span class="pre">load_storyboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IntervalAnnotationStore</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'storyboard'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#artful.schema.Storyboard" title="artful.schema.Storyboard"><span class="pre">Storyboard</span></a></span></span><a class="reference internal" href="../../_modules/artful/store.html#load_storyboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.store.load_storyboard" title="Link to this definition"></a></dt>
+<dd><p>Read panels from <code class="docutils literal notranslate"><span class="pre">store</span></code> and reconstruct a <code class="xref py py-class docutils literal notranslate"><span class="pre">Storyboard</span></code>.</p>
+<p>Filters by <code class="docutils literal notranslate"><span class="pre">tier</span></code> (default <code class="docutils literal notranslate"><span class="pre">&quot;storyboard&quot;</span></code>) and <code class="docutils literal notranslate"><span class="pre">asset_id</span></code> (so a
+store holding multiple storyboards over multiple assets stays clean).
+Panels are returned ordered by interval start.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.store.panel_intervals_from_panels">
+<span class="sig-prename descclassname"><span class="pre">artful.store.</span></span><span class="sig-name descname"><span class="pre">panel_intervals_from_panels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">panels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TimeInterval</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/artful/store.html#panel_intervals_from_panels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.store.panel_intervals_from_panels" title="Link to this definition"></a></dt>
+<dd><p>Convenience: build the panel_intervals dict for <a class="reference internal" href="#artful.store.save_storyboard" title="artful.store.save_storyboard"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a>.</p>
+<p>Takes an iterable of <code class="docutils literal notranslate"><span class="pre">(panel_id,</span> <span class="pre">start_s,</span> <span class="pre">end_s)</span></code> triples. Returns a
+dict keyed by panel_id with TimeInterval values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.store.save_storyboard">
+<span class="sig-prename descclassname"><span class="pre">artful.store.</span></span><span class="sig-name descname"><span class="pre">save_storyboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storyboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="schema.html#artful.schema.Storyboard" title="artful.schema.Storyboard"><span class="pre">Storyboard</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IntervalAnnotationStore</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TimeInterval</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'storyboard'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_generated_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'agent:artful'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/artful/store.html#save_storyboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.store.save_storyboard" title="Link to this definition"></a></dt>
+<dd><p>Persist <code class="docutils literal notranslate"><span class="pre">storyboard</span></code> into <code class="docutils literal notranslate"><span class="pre">store</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>storyboard</strong> – The <code class="xref py py-class docutils literal notranslate"><span class="pre">Storyboard</span></code> to persist.</p></li>
+<li><p><strong>store</strong> – A lacing store (any <code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code>).</p></li>
+<li><p><strong>panel_intervals</strong> – Per-panel-id mapping to a <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.TimeInterval</span></code>.
+Required because <code class="xref py py-class docutils literal notranslate"><span class="pre">PanelBody</span></code> itself does not carry the
+interval (it lives on the annotation’s reference); the caller must
+tell us which time span each panel covers.</p></li>
+<li><p><strong>tier</strong> – Tier name for the persisted annotations. Defaults to
+<code class="docutils literal notranslate"><span class="pre">&quot;storyboard&quot;</span></code> so multiple storyboards over the same asset can
+be distinguished by tier.</p></li>
+<li><p><strong>was_generated_by</strong> (<em>was_attributed_to /</em>) – Provenance fields applied to
+every persisted annotation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of persisted <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code> instances (panels, then meta).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="schema.html" class="btn btn-neutral float-left" title="artful.schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright NO COPYRIGHT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

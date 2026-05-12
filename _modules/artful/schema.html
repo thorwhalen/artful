@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>artful.schema &mdash; artful 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e3a6060d"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            artful
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful.html">artful</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/exports.html">artful.exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/schema.html">artful.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/store.html">artful.store</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">artful</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">artful.schema</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for artful.schema</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Storyboard schema — typed Panels along a timeline, lacing-native.</span>
+
+<span class="sd">A *storyboard* is a sequence of *panels*. Each panel:</span>
+
+<span class="sd">- Spans a time interval on a project&#39;s master timeline (song time, scene</span>
+<span class="sd">  time, podcast clip time).</span>
+<span class="sd">- Optionally points at a shot (or other unit) in the project graph.</span>
+<span class="sd">- Carries one or more *image references* — generated stills, hand drawings,</span>
+<span class="sd">  screenshots, or pointers to a `lacing.Artifact` in storage.</span>
+<span class="sd">- Carries directorial annotations: caption, framing, camera, transition,</span>
+<span class="sd">  notes.</span>
+
+<span class="sd">Panels are persisted as :class:`lacing.Annotation` records with body schema</span>
+<span class="sd">``annot://schema/storyboard-panel/v1``, registered into lacing on package</span>
+<span class="sd">import. That means a storyboard is queryable, exportable, and round-trippable</span>
+<span class="sd">through every adapter lacing already supports (TextGrid, EAF, JAMS, OTIO,</span>
+<span class="sd">WebVTT, Web Annotation), with provenance tracked across edits.</span>
+
+<span class="sd">A storyboard is **not** the rendered video — it&#39;s the panels-along-a-timeline</span>
+<span class="sd">plan that drives the renderer. Use cases:</span>
+
+<span class="sd">- A human draws or arranges panels; an agent renders the panel images via</span>
+<span class="sd">  ``nw.render_storyboard_images``.</span>
+<span class="sd">- An agent generates panels from a script; a human reviews them as a PDF.</span>
+<span class="sd">- The same panel data populates both a printed contact sheet and the</span>
+<span class="sd">  i2v / composite_lipsync seed images for downstream rendering.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
+
+
+<span class="c1"># Body-schema URI for storyboard panels. Versioned (v1).</span>
+<span class="n">PANEL_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/storyboard-panel/v1&quot;</span>
+
+
+<div class="viewcode-block" id="PanelImage">
+<a class="viewcode-back" href="../../module_docs/artful/schema.html#artful.PanelImage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PanelImage</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One image associated with a panel.</span>
+
+<span class="sd">    Either an ``artifact_id`` (pointing into lacing&#39;s Artifact registry by</span>
+<span class="sd">    content hash) or a direct ``url`` / ``path`` is required. ``role``</span>
+<span class="sd">    distinguishes &quot;this is the thumbnail you show on the contact sheet&quot;</span>
+<span class="sd">    from &quot;this is the seed image for the renderer.&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">artifact_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;SHA-256 content hash of the image bytes (matches &quot;</span>
+            <span class="s2">&quot;`lacing.Artifact.asset_id`). Preferred over `url` / `path` for &quot;</span>
+            <span class="s2">&quot;cross-machine identity.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Remote URL, if applicable.&quot;</span><span class="p">)</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Local filesystem path, project-relative when possible.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">role</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;thumbnail&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;One of: &quot;thumbnail&quot; (default — what to show in contact sheet), &#39;</span>
+            <span class="s1">&#39;&quot;seed&quot; (image that drives the downstream renderer), &#39;</span>
+            <span class="s1">&#39;&quot;reference&quot; (input the panel was generated from), &#39;</span>
+            <span class="s1">&#39;&quot;alternate&quot; (variant a curator can pick from).&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="PanelBody">
+<a class="viewcode-back" href="../../module_docs/artful/schema.html#artful.PanelBody">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PanelBody</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The body of a storyboard-panel annotation.</span>
+
+<span class="sd">    Persisted as the ``body`` dict of a :class:`lacing.Annotation` whose</span>
+<span class="sd">    ``body_schema_uri`` is :data:`PANEL_BODY_SCHEMA_URI`.</span>
+
+<span class="sd">    The annotation&#39;s ``reference`` (a :class:`lacing.MediaRef`) carries the</span>
+<span class="sd">    interval — i.e. the time span this panel covers — so we don&#39;t duplicate</span>
+<span class="sd">    interval information here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">panel_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stable id within a storyboard. Distinct from the annotation id.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">shot_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Optional pointer to a project shot (e.g. nw.ShotSpec.id). &quot;</span>
+            <span class="s2">&quot;When set, the panel illustrates that shot.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">images</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PanelImage</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;One or more images for this panel.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-form description shown beside the panel.&quot;</span><span class="p">)</span>
+    <span class="n">framing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Camera framing. Common values: &quot;wide&quot;, &quot;medium&quot;, &quot;close&quot;, &#39;</span>
+            <span class="s1">&#39;&quot;ecu&quot; (extreme close-up), &quot;insert&quot;, &quot;ots&quot; (over-the-shoulder).&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">camera</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Camera move: &quot;static&quot;, &quot;slow push-in&quot;, &quot;pan-left&quot;, etc.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">transition_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;cut&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Transition into this panel: &quot;cut&quot; | &quot;fade&quot; | &quot;match-cut&quot; | …&#39;</span>
+    <span class="p">)</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Director&#39;s notes; not shown on the contact sheet.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Storyboard">
+<a class="viewcode-back" href="../../module_docs/artful/schema.html#artful.Storyboard">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Storyboard</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A typed view over a sequence of panel annotations.</span>
+
+<span class="sd">    Storyboards are *constructed* from in-memory data and *persisted* by</span>
+<span class="sd">    writing each panel as a lacing :class:`Annotation`. Use the helpers in</span>
+<span class="sd">    :mod:`artful.store` to round-trip with a lacing store.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The asset_id of the timeline this storyboard is plotted on &quot;</span>
+            <span class="s2">&quot;(typically the song / video the panels reference).&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">panels</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PanelBody</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">)</span>
+    <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Global visual-style hint for image gen.&quot;</span><span class="p">)</span>
+    <span class="n">aspect</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;16:9&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Aspect ratio: &quot;16:9&quot; | &quot;9:16&quot; | &quot;1:1&quot; | …&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">panel_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PanelBody</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">panels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">panel_id</span> <span class="o">==</span> <span class="n">panel_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">p</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="new_panel_id">
+<a class="viewcode-back" href="../../module_docs/artful/schema.html#artful.new_panel_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">new_panel_id</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;p&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a fresh short panel id (e.g. ``&quot;p3f7c1&quot;``).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<span class="c1"># --- lacing body-schema registration ---------------------------------------</span>
+<span class="c1"># Importing this module registers the panel body schema with lacing&#39;s global</span>
+<span class="c1"># registry, so any annotation with body_schema_uri=PANEL_BODY_SCHEMA_URI is</span>
+<span class="c1"># validated against PanelBody.</span>
+
+<span class="n">register_body_schema</span><span class="p">(</span><span class="n">PANEL_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">PanelBody</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright NO COPYRIGHT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+artful.schema
+=============
+.. automodule:: artful.schema
+   :members:

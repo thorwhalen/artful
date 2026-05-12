@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>artful.store &mdash; artful 0.0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=e3a6060d"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            artful
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful.html">artful</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/exports.html">artful.exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/schema.html">artful.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/store.html">artful.store</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">artful</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">artful.store</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for artful.store</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Round-trip a :class:`Storyboard` through a lacing store.</span>
+
+<span class="sd">Persistence model:</span>
+
+<span class="sd">- Each :class:`PanelBody` is stored as a :class:`lacing.Annotation` whose</span>
+<span class="sd">  ``body`` is the panel body, ``body_schema_uri`` is</span>
+<span class="sd">  :data:`PANEL_BODY_SCHEMA_URI`, ``reference`` is a :class:`lacing.MediaRef`</span>
+<span class="sd">  (asset_id of the timeline + the panel&#39;s interval), and ``tier`` is the</span>
+<span class="sd">  storyboard title (or &quot;storyboard&quot; by default).</span>
+
+<span class="sd">- The storyboard&#39;s ``style`` and ``aspect`` (no per-panel interval) are</span>
+<span class="sd">  stored as one *timeless* annotation tagged with the same tier name and a</span>
+<span class="sd">  small distinct body schema URI.</span>
+
+<span class="sd">This way every adapter lacing already supports (TextGrid, EAF, JAMS, OTIO,</span>
+<span class="sd">WebVTT, Web Annotation, JAMS, Label Studio, …) can round-trip a storyboard</span>
+<span class="sd">unchanged. Apps add storyboard semantics by reading panels via</span>
+<span class="sd">:func:`load_storyboard`; the underlying lacing store stays the single SSOT.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Annotation</span><span class="p">,</span>
+    <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="n">MediaRef</span><span class="p">,</span>
+    <span class="n">Provenance</span><span class="p">,</span>
+    <span class="n">TimeInterval</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing.artifact</span><span class="w"> </span><span class="kn">import</span> <span class="n">_now_rt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PANEL_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">PanelBody</span><span class="p">,</span>
+    <span class="n">Storyboard</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># A storyboard-level meta record (style, aspect, title) lives under a sibling</span>
+<span class="c1"># body schema. Registered lazily so importing artful.store doesn&#39;t double-</span>
+<span class="c1"># register if artful.schema was already imported.</span>
+
+<span class="n">STORYBOARD_META_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/storyboard-meta/v1&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span>
+
+
+<div class="viewcode-block" id="StoryboardMetaBody">
+<a class="viewcode-back" href="../../module_docs/artful/store.html#artful.StoryboardMetaBody">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StoryboardMetaBody</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">aspect</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;16:9&quot;</span></div>
+
+
+
+<span class="n">_meta_registered</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_meta_registered</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">_meta_registered</span>
+    <span class="k">if</span> <span class="n">_meta_registered</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">register_body_schema</span><span class="p">(</span><span class="n">STORYBOARD_META_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">StoryboardMetaBody</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="c1"># If already registered (re-import), that&#39;s fine.</span>
+        <span class="k">pass</span>
+    <span class="n">_meta_registered</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="n">_ensure_meta_registered</span><span class="p">()</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Save / load</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="n">_DEFAULT_TIER</span> <span class="o">=</span> <span class="s2">&quot;storyboard&quot;</span>
+
+
+<div class="viewcode-block" id="save_storyboard">
+<a class="viewcode-back" href="../../module_docs/artful/store.html#artful.save_storyboard">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_storyboard</span><span class="p">(</span>
+    <span class="n">storyboard</span><span class="p">:</span> <span class="n">Storyboard</span><span class="p">,</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">panel_intervals</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">],</span>
+    <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_DEFAULT_TIER</span><span class="p">,</span>
+    <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:unknown&quot;</span><span class="p">,</span>
+    <span class="n">was_generated_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent:artful&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Persist ``storyboard`` into ``store``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        storyboard: The :class:`Storyboard` to persist.</span>
+<span class="sd">        store: A lacing store (any :class:`IntervalAnnotationStore`).</span>
+<span class="sd">        panel_intervals: Per-panel-id mapping to a :class:`lacing.TimeInterval`.</span>
+<span class="sd">            Required because :class:`PanelBody` itself does not carry the</span>
+<span class="sd">            interval (it lives on the annotation&#39;s reference); the caller must</span>
+<span class="sd">            tell us which time span each panel covers.</span>
+<span class="sd">        tier: Tier name for the persisted annotations. Defaults to</span>
+<span class="sd">            ``&quot;storyboard&quot;`` so multiple storyboards over the same asset can</span>
+<span class="sd">            be distinguished by tier.</span>
+<span class="sd">        was_attributed_to / was_generated_by: Provenance fields applied to</span>
+<span class="sd">            every persisted annotation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The list of persisted :class:`Annotation` instances (panels, then meta).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prov</span> <span class="o">=</span> <span class="n">_make_prov</span><span class="p">(</span><span class="n">was_generated_by</span><span class="p">,</span> <span class="n">was_attributed_to</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">panels</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">panel_intervals</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;save_storyboard: no interval given for panel_id=</span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="n">panel_intervals</span><span class="p">[</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="p">]</span>
+        <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+            <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">,</span>
+            <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">),</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">panel</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+            <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">PANEL_BODY_SCHEMA_URI</span><span class="p">,</span>
+            <span class="n">provenance</span><span class="o">=</span><span class="n">prov</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+
+    <span class="c1"># Storyboard-level meta as a timeless annotation.</span>
+    <span class="k">if</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">style</span> <span class="ow">or</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">aspect</span> <span class="o">!=</span> <span class="s2">&quot;16:9&quot;</span><span class="p">:</span>
+        <span class="n">meta_body</span> <span class="o">=</span> <span class="n">StoryboardMetaBody</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">storyboard</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="p">,</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="n">storyboard</span><span class="o">.</span><span class="n">aspect</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">meta_ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+            <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">,</span>
+            <span class="c1"># Timeless annotation: no interval. Use a placeholder MediaRef</span>
+            <span class="c1"># with a zero-duration interval at t=0 — lacing accepts it.</span>
+            <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">meta_body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+            <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">STORYBOARD_META_BODY_SCHEMA_URI</span><span class="p">,</span>
+            <span class="n">provenance</span><span class="o">=</span><span class="n">prov</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">meta_ann</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">meta_ann</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<div class="viewcode-block" id="load_storyboard">
+<a class="viewcode-back" href="../../module_docs/artful/store.html#artful.load_storyboard">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_storyboard</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_DEFAULT_TIER</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Storyboard</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read panels from ``store`` and reconstruct a :class:`Storyboard`.</span>
+
+<span class="sd">    Filters by ``tier`` (default ``&quot;storyboard&quot;``) and ``asset_id`` (so a</span>
+<span class="sd">    store holding multiple storyboards over multiple assets stays clean).</span>
+<span class="sd">    Panels are returned ordered by interval start.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">panels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">TimeInterval</span><span class="p">,</span> <span class="n">PanelBody</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">aspect</span> <span class="o">=</span> <span class="s2">&quot;16:9&quot;</span>
+
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">!=</span> <span class="n">tier</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span> <span class="n">MediaRef</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">asset_id</span> <span class="o">!=</span> <span class="n">asset_id</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">==</span> <span class="n">PANEL_BODY_SCHEMA_URI</span><span class="p">:</span>
+            <span class="n">panel</span> <span class="o">=</span> <span class="n">PanelBody</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+            <span class="n">panels</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span> <span class="n">panel</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">==</span> <span class="n">STORYBOARD_META_BODY_SCHEMA_URI</span><span class="p">:</span>
+            <span class="n">meta</span> <span class="o">=</span> <span class="n">StoryboardMetaBody</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">title</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">style</span>
+            <span class="n">aspect</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">aspect</span>
+
+    <span class="n">panels</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">Storyboard</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span>
+        <span class="n">panels</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">panels</span><span class="p">),</span>
+        <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="panel_intervals_from_panels">
+<a class="viewcode-back" href="../../module_docs/artful/store.html#artful.panel_intervals_from_panels">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">panel_intervals_from_panels</span><span class="p">(</span>
+    <span class="n">panels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience: build the panel_intervals dict for :func:`save_storyboard`.</span>
+
+<span class="sd">    Takes an iterable of ``(panel_id, start_s, end_s)`` triples. Returns a</span>
+<span class="sd">    dict keyed by panel_id with TimeInterval values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">pid</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="n">start_s</span><span class="p">,</span> <span class="n">end_s</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pid</span><span class="p">,</span> <span class="n">start_s</span><span class="p">,</span> <span class="n">end_s</span> <span class="ow">in</span> <span class="n">panels</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internals</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_prov</span><span class="p">(</span><span class="n">was_generated_by</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Provenance</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Provenance</span><span class="p">(</span>
+        <span class="n">was_generated_by</span><span class="o">=</span><span class="n">was_generated_by</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+        <span class="n">was_derived_from</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">generated_at_time</span><span class="o">=</span><span class="n">_now_rt</span><span class="p">(),</span>
+        <span class="n">activity</span><span class="o">=</span><span class="s2">&quot;create&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright NO COPYRIGHT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

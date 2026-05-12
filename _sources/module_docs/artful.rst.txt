@@ -1,0 +1,4 @@
+artful
+======
+.. automodule:: artful
+   :members:
