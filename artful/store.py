@@ -64,6 +64,7 @@ def _ensure_meta_registered() -> None:
     if _meta_registered:
         return
     from lacing import register_body_schema
+
     try:
         register_body_schema(STORYBOARD_META_BODY_SCHEMA_URI, StoryboardMetaBody)
     except Exception:
@@ -200,7 +201,7 @@ def load_storyboard(
 
 
 def panel_intervals_from_panels(
-    panels: Iterable[tuple[str, float, float]]
+    panels: Iterable[tuple[str, float, float]],
 ) -> dict[str, TimeInterval]:
     """Convenience: build the panel_intervals dict for :func:`save_storyboard`.
 
@@ -208,8 +209,7 @@ def panel_intervals_from_panels(
     dict keyed by panel_id with TimeInterval values.
     """
     return {
-        pid: TimeInterval.from_seconds(start_s, end_s)
-        for pid, start_s, end_s in panels
+        pid: TimeInterval.from_seconds(start_s, end_s) for pid, start_s, end_s in panels
     }
 
 

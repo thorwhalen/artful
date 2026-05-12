@@ -89,7 +89,8 @@ class PanelBody(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     panel_id: str = Field(
-        ..., description="Stable id within a storyboard. Distinct from the annotation id."
+        ...,
+        description="Stable id within a storyboard. Distinct from the annotation id.",
     )
     shot_id: Optional[str] = Field(
         None,
@@ -102,7 +103,9 @@ class PanelBody(BaseModel):
         default_factory=tuple,
         description="One or more images for this panel.",
     )
-    caption: str = Field("", description="Free-form description shown beside the panel.")
+    caption: str = Field(
+        "", description="Free-form description shown beside the panel."
+    )
     framing: str = Field(
         "",
         description=(
@@ -114,9 +117,12 @@ class PanelBody(BaseModel):
         "", description='Camera move: "static", "slow push-in", "pan-left", etc.'
     )
     transition_in: str = Field(
-        "cut", description='Transition into this panel: "cut" | "fade" | "match-cut" | …'
+        "cut",
+        description='Transition into this panel: "cut" | "fade" | "match-cut" | …',
     )
-    notes: str = Field("", description="Director's notes; not shown on the contact sheet.")
+    notes: str = Field(
+        "", description="Director's notes; not shown on the contact sheet."
+    )
 
 
 class Storyboard(BaseModel):

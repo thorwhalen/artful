@@ -71,8 +71,10 @@ def to_markdown(
             out.append(panel.caption)
             out.append("")
         for img in panel.images:
-            ref = img.path or img.url or (
-                f"artifact:{img.artifact_id}" if img.artifact_id else ""
+            ref = (
+                img.path
+                or img.url
+                or (f"artifact:{img.artifact_id}" if img.artifact_id else "")
             )
             cap = img.caption or img.role
             if ref:
@@ -226,7 +228,7 @@ def _strip_code(s: str) -> str:
 
 def _image_from_src(src: str, *, caption: str = "") -> PanelImage:
     if src.startswith("artifact:"):
-        return PanelImage(artifact_id=src[len("artifact:"):], caption=caption)
+        return PanelImage(artifact_id=src[len("artifact:") :], caption=caption)
     if src.startswith(("http://", "https://", "s3://", "gs://")):
         return PanelImage(url=src, caption=caption)
     return PanelImage(path=src, caption=caption)
@@ -261,10 +263,10 @@ h1 { margin-bottom: 0.25rem; }
 
     parts.append(f"<h1>{_html.escape(storyboard.title or 'Storyboard')}</h1>")
     parts.append('<div class="meta">')
-    parts.append(f'asset_id: <code>{_html.escape(storyboard.asset_id)}</code>')
+    parts.append(f"asset_id: <code>{_html.escape(storyboard.asset_id)}</code>")
     if storyboard.style:
-        parts.append(f' · style: {_html.escape(storyboard.style)}')
-    parts.append(f' · aspect: {_html.escape(storyboard.aspect)}')
+        parts.append(f" · style: {_html.escape(storyboard.style)}")
+    parts.append(f" · aspect: {_html.escape(storyboard.aspect)}")
     parts.append("</div>")
 
     for panel in storyboard.panels:
