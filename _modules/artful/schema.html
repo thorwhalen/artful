@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.schema &mdash; artful 0.0.2 documentation</title>
+  <title>artful.schema &mdash; artful 0.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e3a6060d"></script>
+      <script src="../../_static/documentation_options.js?v=47de8214"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -108,11 +108,23 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
+
+
+<span class="n">ReviewStatus</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;unreviewed&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;approved&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;needs-revision&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rejected&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Review status of a storyboard panel. Defaults to ``&quot;unreviewed&quot;``;</span>
+<span class="sd">the FE Kanban view + per-panel review badge consume this. v0.3</span>
+<span class="sd">persisted-review-status field — backward-compatible (existing dump</span>
+<span class="sd">files without the field get the default).&quot;&quot;&quot;</span>
 
 
 <span class="c1"># Body-schema URI for storyboard panels. Versioned (v1).</span>
@@ -173,7 +185,8 @@
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
 
     <span class="n">panel_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stable id within a storyboard. Distinct from the annotation id.&quot;</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stable id within a storyboard. Distinct from the annotation id.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">shot_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
@@ -186,7 +199,9 @@
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;One or more images for this panel.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-form description shown beside the panel.&quot;</span><span class="p">)</span>
+    <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-form description shown beside the panel.&quot;</span>
+    <span class="p">)</span>
     <span class="n">framing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
@@ -198,9 +213,22 @@
         <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Camera move: &quot;static&quot;, &quot;slow push-in&quot;, &quot;pan-left&quot;, etc.&#39;</span>
     <span class="p">)</span>
     <span class="n">transition_in</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;cut&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Transition into this panel: &quot;cut&quot; | &quot;fade&quot; | &quot;match-cut&quot; | …&#39;</span>
+        <span class="s2">&quot;cut&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Transition into this panel: &quot;cut&quot; | &quot;fade&quot; | &quot;match-cut&quot; | …&#39;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Director&#39;s notes; not shown on the contact sheet.&quot;</span><span class="p">)</span></div>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Director&#39;s notes; not shown on the contact sheet.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">review_status</span><span class="p">:</span> <span class="n">ReviewStatus</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;unreviewed&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Per-panel review status. Cycles through unreviewed → &quot;</span>
+            <span class="s2">&quot;approved → needs-revision → rejected via the FE&#39;s &quot;</span>
+            <span class="s2">&quot;panel.review.cycle command. Defaults to &#39;unreviewed&#39; so &quot;</span>
+            <span class="s2">&quot;v0.2-era dump files (which don&#39;t carry this field) load &quot;</span>
+            <span class="s2">&quot;cleanly.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
 
 
 
