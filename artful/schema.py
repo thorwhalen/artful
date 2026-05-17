@@ -145,6 +145,19 @@ class PanelBody(BaseModel):
             "cleanly."
         ),
     )
+    active_image_index: int = Field(
+        0,
+        description=(
+            "Index into ``images`` of the currently-active alternate — "
+            "the one the picture-book / gallery / kanban renders. "
+            "Multiple images in ``images`` are treated as alternates "
+            "(generated variations of the same shot); this field "
+            "tracks which one the director has chosen. Defaults to 0 "
+            "so a single-image panel always renders that one image, "
+            "and v0.3-era dump files (no field) round-trip cleanly."
+        ),
+        ge=0,
+    )
 
 
 class Storyboard(BaseModel):
