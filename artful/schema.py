@@ -29,11 +29,23 @@ plan that drives the renderer. Use cases:
 from __future__ import annotations
 
 import uuid as _uuid
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from lacing import register_body_schema
+
+
+ReviewStatus = Literal[
+    "unreviewed",
+    "approved",
+    "needs-revision",
+    "rejected",
+]
+"""Review status of a storyboard panel. Defaults to ``"unreviewed"``;
+the FE Kanban view + per-panel review badge consume this. v0.3
+persisted-review-status field — backward-compatible (existing dump
+files without the field get the default)."""
 
 
 # Body-schema URI for storyboard panels. Versioned (v1).
@@ -122,6 +134,16 @@ class PanelBody(BaseModel):
     )
     notes: str = Field(
         "", description="Director's notes; not shown on the contact sheet."
+    )
+    review_status: ReviewStatus = Field(
+        "unreviewed",
+        description=(
+            "Per-panel review status. Cycles through unreviewed → "
+            "approved → needs-revision → rejected via the FE's "
+            "panel.review.cycle command. Defaults to 'unreviewed' so "
+            "v0.2-era dump files (which don't carry this field) load "
+            "cleanly."
+        ),
     )
 
 
