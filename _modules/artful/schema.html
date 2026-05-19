@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.schema &mdash; artful 0.0.4 documentation</title>
+  <title>artful.schema &mdash; artful 0.0.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -121,6 +121,31 @@
     <span class="s2">&quot;needs-revision&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rejected&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="n">MomentHeuristic</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;decisive_composition&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;apex_of_action&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;just_before_recognition&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;held_breath&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;reaction_not_action&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;entry_for_clip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;expression_over_action&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;silhouette_test&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eyeline_contact&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Spec §7.2 iconic-frame heuristics. ``entry_for_clip`` is the</span>
+<span class="sd">mandatory choice for ``ai_cinematic_clip`` output intents (where the</span>
+<span class="sd">video model interpolates forward from the depicted frame).&quot;&quot;&quot;</span>
+
+
+<span class="n">MomentTiming</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="s2">&quot;mid&quot;</span><span class="p">,</span> <span class="s2">&quot;apex&quot;</span><span class="p">,</span> <span class="s2">&quot;exit&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Spec §7.2 — where in the implied motion the depicted frame sits.&quot;&quot;&quot;</span>
+
+
+<span class="n">DurationSource</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;estimate&quot;</span><span class="p">,</span> <span class="s2">&quot;from_voiceover&quot;</span><span class="p">,</span> <span class="s2">&quot;from_clip&quot;</span><span class="p">,</span> <span class="s2">&quot;manual&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Spec §7.5 — provenance of a panel&#39;s duration field. ``manual``</span>
+<span class="sd">indicates the user overrode the estimate.&quot;&quot;&quot;</span>
 <span class="sd">&quot;&quot;&quot;Review status of a storyboard panel. Defaults to ``&quot;unreviewed&quot;``;</span>
 <span class="sd">the FE Kanban view + per-panel review badge consume this. v0.3</span>
 <span class="sd">persisted-review-status field — backward-compatible (existing dump</span>
@@ -241,6 +266,82 @@
             <span class="s2">&quot;and v0.3-era dump files (no field) round-trip cleanly.&quot;</span>
         <span class="p">),</span>
         <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># --- Narrative→Storyboard (Phase 0) additive fields ---------------</span>
+    <span class="c1"># All Optional, all None-default — pre-Phase-0 dump files load cleanly.</span>
+    <span class="n">moment_caption</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;One-line gloss of the depicted moment (spec §7.2). Distinct &quot;</span>
+            <span class="s2">&quot;from ``caption``: caption is the user-facing line; &quot;</span>
+            <span class="s2">&quot;moment_caption is the segmenter&#39;s choice rationale.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">moment_heuristic</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MomentHeuristic</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Which iconic-frame heuristic picked this moment (spec §7.2).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">moment_timing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MomentTiming</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;entry / mid / apex / exit — where in the implied motion the &quot;</span>
+            <span class="s2">&quot;depicted frame sits. Drives ``ai_cinematic_clip`` rendering.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">moment_focal_character_ref</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Name of the focal character-ref for this panel (multi-char &quot;</span>
+            <span class="s2">&quot;beats; spec §7.2 priority rule).&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">split_from_beat_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;If this panel was produced by splitting one beat into N &quot;</span>
+            <span class="s2">&quot;panels, the beat id. Spec §7.1 PanelExtensionSplitProvenance.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">split_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;0-based index of this panel within its beat split.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">split_total</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Total panels produced from the beat split.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">split_reason</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;&quot;verb-clause&quot; | &quot;shot-reverse-shot&quot; | &quot;just-before/after&quot; | &#39;</span>
+            <span class="s1">&#39;&quot;montage&quot; | … (spec §7.1).&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">duration_seconds_estimate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Estimated panel duration in seconds (spec §7.5). Float here &quot;</span>
+            <span class="s2">&quot;is intentional — RationalTime is materialized only when the &quot;</span>
+            <span class="s2">&quot;panel commits to a timeline. See PanelDurationExtension.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">duration_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DurationSource</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Where the duration value came from. ``manual`` indicates &quot;</span>
+            <span class="s2">&quot;user override of the estimate.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">duration_confidence</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;0..1 confidence on the duration estimate.&quot;</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">le</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">duration_model_version</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Version of the duration model that produced the estimate, &quot;</span>
+            <span class="s2">&quot;for cache-busting when the model changes.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
 
@@ -285,12 +386,115 @@
 
 
 
+<span class="c1"># --- Model sheet -----------------------------------------------------------</span>
+
+<span class="c1"># Body-schema URI for character model sheets (spec §7.4).</span>
+<span class="n">MODEL_SHEET_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/model-sheet/v1&quot;</span>
+
+
+<span class="n">ModelSheetView</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;front&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;three_quarter_front&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;side_left&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;side_right&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;three_quarter_back&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;back&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Canonical model-sheet views (spec §7.4 conventions).&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="ModelSheet">
+<a class="viewcode-back" href="../../module_docs/artful/schema.html#artful.ModelSheet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelSheet</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The body of a model-sheet annotation — a character&#39;s canonical</span>
+<span class="sd">    turnaround, expression set, and supporting metadata.</span>
+
+<span class="sd">    Produced by ``character_to_modelsheet.&lt;flavor&gt;.&lt;model&gt;`` (spec §7.4).</span>
+<span class="sd">    Lives in artful (next to PanelBody) because it is a storyboard-adjacent</span>
+<span class="sd">    asset: model sheets feed into per-panel renders as reference images,</span>
+<span class="sd">    and the inspector surfaces them alongside the panels they conditioned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">character_ref_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Id of the character-ref this sheet belongs to (the schema &quot;</span>
+            <span class="s2">&quot;for character-ref/v1 lives in nw).&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">sheet_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stable id within the project (e.g. &#39;ms-001&#39;).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">canonical_views</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ModelSheetView</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Map of canonical view → ``render-result`` annotation id. Not &quot;</span>
+            <span class="s2">&quot;every view is required for v1; the producing Transform fills &quot;</span>
+            <span class="s2">&quot;the views it can hit.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">expression_set</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Map of expression label (e.g. &#39;joy&#39;, &#39;fear&#39;, &#39;neutral&#39;) → &quot;</span>
+            <span class="s2">&quot;``render-result`` annotation id.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">costume_set</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Map of costume label → ``render-result`` annotation id.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">palette_anchors</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hex color anchors for this character.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">distinguishing_features</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Free-text feature notes — &quot;left eye scar&quot;, &quot;red bandana&quot;. &#39;</span>
+            <span class="s2">&quot;Appended to character_ref prompt slots.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">head_to_body_ratio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Conventional 7.5 for realistic, 5-6 for anime/cutout, 2-3 &quot;</span>
+            <span class="s2">&quot;for chibi, 4-5 for children&#39;s book. None lets the flavor &quot;</span>
+            <span class="s2">&quot;decide.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">gt</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">do_not_do</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Negative-prompt directives, character-scoped (spec §7.4).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">age_progression</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Map of age label (e.g. &#39;child&#39;, &#39;elder&#39;) → ``render-result`` &quot;</span>
+            <span class="s2">&quot;annotation id. Optional.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">prop_interactions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Map of prop id → ``render-result`` annotation id.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">voice_personality_notes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-text personality notes for downstream LLM/TTS.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
 <span class="c1"># --- lacing body-schema registration ---------------------------------------</span>
 <span class="c1"># Importing this module registers the panel body schema with lacing&#39;s global</span>
 <span class="c1"># registry, so any annotation with body_schema_uri=PANEL_BODY_SCHEMA_URI is</span>
 <span class="c1"># validated against PanelBody.</span>
 
 <span class="n">register_body_schema</span><span class="p">(</span><span class="n">PANEL_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">PanelBody</span><span class="p">)</span>
+<span class="n">register_body_schema</span><span class="p">(</span><span class="n">MODEL_SHEET_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">ModelSheet</span><span class="p">)</span>
 </pre></div>
 
            </div>
