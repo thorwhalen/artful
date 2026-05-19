@@ -23,7 +23,13 @@ Public surface:
 
 from .exports import from_markdown, to_html, to_markdown
 from .schema import (
+    MODEL_SHEET_BODY_SCHEMA_URI,
     PANEL_BODY_SCHEMA_URI,
+    DurationSource,
+    ModelSheet,
+    ModelSheetView,
+    MomentHeuristic,
+    MomentTiming,
     PanelBody,
     PanelImage,
     Storyboard,
@@ -38,8 +44,14 @@ from .store import (
 )
 
 __all__ = [
+    "MODEL_SHEET_BODY_SCHEMA_URI",
     "PANEL_BODY_SCHEMA_URI",
     "STORYBOARD_META_BODY_SCHEMA_URI",
+    "DurationSource",
+    "ModelSheet",
+    "ModelSheetView",
+    "MomentHeuristic",
+    "MomentTiming",
     "PanelBody",
     "PanelImage",
     "Storyboard",

@@ -42,6 +42,31 @@ ReviewStatus = Literal[
     "needs-revision",
     "rejected",
 ]
+
+
+MomentHeuristic = Literal[
+    "decisive_composition",
+    "apex_of_action",
+    "just_before_recognition",
+    "held_breath",
+    "reaction_not_action",
+    "entry_for_clip",
+    "expression_over_action",
+    "silhouette_test",
+    "eyeline_contact",
+]
+"""Spec §7.2 iconic-frame heuristics. ``entry_for_clip`` is the
+mandatory choice for ``ai_cinematic_clip`` output intents (where the
+video model interpolates forward from the depicted frame)."""
+
+
+MomentTiming = Literal["entry", "mid", "apex", "exit"]
+"""Spec §7.2 — where in the implied motion the depicted frame sits."""
+
+
+DurationSource = Literal["estimate", "from_voiceover", "from_clip", "manual"]
+"""Spec §7.5 — provenance of a panel's duration field. ``manual``
+indicates the user overrode the estimate."""
 """Review status of a storyboard panel. Defaults to ``"unreviewed"``;
 the FE Kanban view + per-panel review badge consume this. v0.3
 persisted-review-status field — backward-compatible (existing dump
@@ -158,6 +183,82 @@ class PanelBody(BaseModel):
         ),
         ge=0,
     )
+    # --- Narrative→Storyboard (Phase 0) additive fields ---------------
+    # All Optional, all None-default — pre-Phase-0 dump files load cleanly.
+    moment_caption: Optional[str] = Field(
+        None,
+        description=(
+            "One-line gloss of the depicted moment (spec §7.2). Distinct "
+            "from ``caption``: caption is the user-facing line; "
+            "moment_caption is the segmenter's choice rationale."
+        ),
+    )
+    moment_heuristic: Optional[MomentHeuristic] = Field(
+        None, description="Which iconic-frame heuristic picked this moment (spec §7.2)."
+    )
+    moment_timing: Optional[MomentTiming] = Field(
+        None,
+        description=(
+            "entry / mid / apex / exit — where in the implied motion the "
+            "depicted frame sits. Drives ``ai_cinematic_clip`` rendering."
+        ),
+    )
+    moment_focal_character_ref: Optional[str] = Field(
+        None,
+        description=(
+            "Name of the focal character-ref for this panel (multi-char "
+            "beats; spec §7.2 priority rule)."
+        ),
+    )
+    split_from_beat_id: Optional[str] = Field(
+        None,
+        description=(
+            "If this panel was produced by splitting one beat into N "
+            "panels, the beat id. Spec §7.1 PanelExtensionSplitProvenance."
+        ),
+    )
+    split_index: Optional[int] = Field(
+        None, description="0-based index of this panel within its beat split."
+    )
+    split_total: Optional[int] = Field(
+        None, description="Total panels produced from the beat split."
+    )
+    split_reason: Optional[str] = Field(
+        None,
+        description=(
+            '"verb-clause" | "shot-reverse-shot" | "just-before/after" | '
+            '"montage" | … (spec §7.1).'
+        ),
+    )
+    duration_seconds_estimate: Optional[float] = Field(
+        None,
+        description=(
+            "Estimated panel duration in seconds (spec §7.5). Float here "
+            "is intentional — RationalTime is materialized only when the "
+            "panel commits to a timeline. See PanelDurationExtension."
+        ),
+        ge=0.0,
+    )
+    duration_source: Optional[DurationSource] = Field(
+        None,
+        description=(
+            "Where the duration value came from. ``manual`` indicates "
+            "user override of the estimate."
+        ),
+    )
+    duration_confidence: Optional[float] = Field(
+        None,
+        description="0..1 confidence on the duration estimate.",
+        ge=0.0,
+        le=1.0,
+    )
+    duration_model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Version of the duration model that produced the estimate, "
+            "for cache-busting when the model changes."
+        ),
+    )
 
 
 class Storyboard(BaseModel):
@@ -194,9 +295,109 @@ def new_panel_id(prefix: str = "p") -> str:
     return f"{prefix}{_uuid.uuid4().hex[:6]}"
 
 
+# --- Model sheet -----------------------------------------------------------
+
+# Body-schema URI for character model sheets (spec §7.4).
+MODEL_SHEET_BODY_SCHEMA_URI = "annot://schema/model-sheet/v1"
+
+
+ModelSheetView = Literal[
+    "front",
+    "three_quarter_front",
+    "side_left",
+    "side_right",
+    "three_quarter_back",
+    "back",
+]
+"""Canonical model-sheet views (spec §7.4 conventions)."""
+
+
+class ModelSheet(BaseModel):
+    """The body of a model-sheet annotation — a character's canonical
+    turnaround, expression set, and supporting metadata.
+
+    Produced by ``character_to_modelsheet.<flavor>.<model>`` (spec §7.4).
+    Lives in artful (next to PanelBody) because it is a storyboard-adjacent
+    asset: model sheets feed into per-panel renders as reference images,
+    and the inspector surfaces them alongside the panels they conditioned.
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    character_ref_id: str = Field(
+        ...,
+        description=(
+            "Id of the character-ref this sheet belongs to (the schema "
+            "for character-ref/v1 lives in nw)."
+        ),
+    )
+    sheet_id: str = Field(
+        ..., description="Stable id within the project (e.g. 'ms-001')."
+    )
+    canonical_views: dict[ModelSheetView, str] = Field(
+        default_factory=dict,
+        description=(
+            "Map of canonical view → ``render-result`` annotation id. Not "
+            "every view is required for v1; the producing Transform fills "
+            "the views it can hit."
+        ),
+    )
+    expression_set: dict[str, str] = Field(
+        default_factory=dict,
+        description=(
+            "Map of expression label (e.g. 'joy', 'fear', 'neutral') → "
+            "``render-result`` annotation id."
+        ),
+    )
+    costume_set: dict[str, str] = Field(
+        default_factory=dict,
+        description="Map of costume label → ``render-result`` annotation id.",
+    )
+    palette_anchors: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description="Hex color anchors for this character.",
+    )
+    distinguishing_features: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description=(
+            'Free-text feature notes — "left eye scar", "red bandana". '
+            "Appended to character_ref prompt slots."
+        ),
+    )
+    head_to_body_ratio: Optional[float] = Field(
+        None,
+        description=(
+            "Conventional 7.5 for realistic, 5-6 for anime/cutout, 2-3 "
+            "for chibi, 4-5 for children's book. None lets the flavor "
+            "decide."
+        ),
+        gt=0.0,
+    )
+    do_not_do: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description="Negative-prompt directives, character-scoped (spec §7.4).",
+    )
+    age_progression: dict[str, str] = Field(
+        default_factory=dict,
+        description=(
+            "Map of age label (e.g. 'child', 'elder') → ``render-result`` "
+            "annotation id. Optional."
+        ),
+    )
+    prop_interactions: dict[str, str] = Field(
+        default_factory=dict,
+        description="Map of prop id → ``render-result`` annotation id.",
+    )
+    voice_personality_notes: Optional[str] = Field(
+        None,
+        description="Free-text personality notes for downstream LLM/TTS.",
+    )
+
+
 # --- lacing body-schema registration ---------------------------------------
 # Importing this module registers the panel body schema with lacing's global
 # registry, so any annotation with body_schema_uri=PANEL_BODY_SCHEMA_URI is
 # validated against PanelBody.
 
 register_body_schema(PANEL_BODY_SCHEMA_URI, PanelBody)
+register_body_schema(MODEL_SHEET_BODY_SCHEMA_URI, ModelSheet)
