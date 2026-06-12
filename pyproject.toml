@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "artful"
-version = "0.0.6"
+version = "0.0.7"
 description = "Storyboard data model and exporters — lacing-native panels along a timeline"
 readme = "README.md"
 requires-python = ">=3.10"
