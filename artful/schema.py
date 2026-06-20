@@ -65,8 +65,19 @@ MomentTiming = Literal["entry", "mid", "apex", "exit"]
 
 
 ShotSize = Literal[
-    "ECU", "CU", "MCU", "MS", "MWS", "WS", "LS", "ELS",
-    "INSERT", "TWO_SHOT", "THREE_SHOT", "GROUP", "MASTER",
+    "ECU",
+    "CU",
+    "MCU",
+    "MS",
+    "MWS",
+    "WS",
+    "LS",
+    "ELS",
+    "INSERT",
+    "TWO_SHOT",
+    "THREE_SHOT",
+    "GROUP",
+    "MASTER",
 ]
 """Spec §6.3 shot-size taxonomy. Controlled vocabulary — distinct from the
 free-text :attr:`PanelBody.framing` field. This is the single source of truth
@@ -75,18 +86,34 @@ shot-grammar advisor and the panel body share one vocabulary."""
 
 
 Angle = Literal[
-    "EYE_LEVEL", "HIGH", "LOW", "DUTCH",
-    "BIRDS_EYE", "WORMS_EYE", "PROFILE", "THREE_QUARTER",
-    "OTS", "POV",
+    "EYE_LEVEL",
+    "HIGH",
+    "LOW",
+    "DUTCH",
+    "BIRDS_EYE",
+    "WORMS_EYE",
+    "PROFILE",
+    "THREE_QUARTER",
+    "OTS",
+    "POV",
 ]
 """Spec §6.3 / §9.3 angle taxonomy. Controlled vocabulary — distinct from the
 free-text :attr:`PanelBody.camera` field."""
 
 
 Movement = Literal[
-    "LOCKED", "PAN", "TILT", "DOLLY_IN", "DOLLY_OUT",
-    "TRUCK", "PEDESTAL", "ZOOM", "CRANE", "HANDHELD",
-    "WHIP_PAN", "DOLLY_ZOOM",
+    "LOCKED",
+    "PAN",
+    "TILT",
+    "DOLLY_IN",
+    "DOLLY_OUT",
+    "TRUCK",
+    "PEDESTAL",
+    "ZOOM",
+    "CRANE",
+    "HANDHELD",
+    "WHIP_PAN",
+    "DOLLY_ZOOM",
 ]
 """Spec §6.3 movement taxonomy. ``LOCKED`` is the default in practice."""
 
