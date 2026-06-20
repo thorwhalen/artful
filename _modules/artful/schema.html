@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.schema &mdash; artful 0.0.6 documentation</title>
+  <title>artful.schema &mdash; artful 0.0.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1fd71caa"></script>
+      <script src="../../_static/documentation_options.js?v=bbaf98b3"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -141,6 +141,33 @@
 
 <span class="n">MomentTiming</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;entry&quot;</span><span class="p">,</span> <span class="s2">&quot;mid&quot;</span><span class="p">,</span> <span class="s2">&quot;apex&quot;</span><span class="p">,</span> <span class="s2">&quot;exit&quot;</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;Spec §7.2 — where in the implied motion the depicted frame sits.&quot;&quot;&quot;</span>
+
+
+<span class="n">ShotSize</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;ECU&quot;</span><span class="p">,</span> <span class="s2">&quot;CU&quot;</span><span class="p">,</span> <span class="s2">&quot;MCU&quot;</span><span class="p">,</span> <span class="s2">&quot;MS&quot;</span><span class="p">,</span> <span class="s2">&quot;MWS&quot;</span><span class="p">,</span> <span class="s2">&quot;WS&quot;</span><span class="p">,</span> <span class="s2">&quot;LS&quot;</span><span class="p">,</span> <span class="s2">&quot;ELS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;INSERT&quot;</span><span class="p">,</span> <span class="s2">&quot;TWO_SHOT&quot;</span><span class="p">,</span> <span class="s2">&quot;THREE_SHOT&quot;</span><span class="p">,</span> <span class="s2">&quot;GROUP&quot;</span><span class="p">,</span> <span class="s2">&quot;MASTER&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Spec §6.3 shot-size taxonomy. Controlled vocabulary — distinct from the</span>
+<span class="sd">free-text :attr:`PanelBody.framing` field. This is the single source of truth</span>
+<span class="sd">for the storyboard-panel schema; ``reelee.bodies.shot`` re-exports these so the</span>
+<span class="sd">shot-grammar advisor and the panel body share one vocabulary.&quot;&quot;&quot;</span>
+
+
+<span class="n">Angle</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;EYE_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;HIGH&quot;</span><span class="p">,</span> <span class="s2">&quot;LOW&quot;</span><span class="p">,</span> <span class="s2">&quot;DUTCH&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BIRDS_EYE&quot;</span><span class="p">,</span> <span class="s2">&quot;WORMS_EYE&quot;</span><span class="p">,</span> <span class="s2">&quot;PROFILE&quot;</span><span class="p">,</span> <span class="s2">&quot;THREE_QUARTER&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OTS&quot;</span><span class="p">,</span> <span class="s2">&quot;POV&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Spec §6.3 / §9.3 angle taxonomy. Controlled vocabulary — distinct from the</span>
+<span class="sd">free-text :attr:`PanelBody.camera` field.&quot;&quot;&quot;</span>
+
+
+<span class="n">Movement</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;LOCKED&quot;</span><span class="p">,</span> <span class="s2">&quot;PAN&quot;</span><span class="p">,</span> <span class="s2">&quot;TILT&quot;</span><span class="p">,</span> <span class="s2">&quot;DOLLY_IN&quot;</span><span class="p">,</span> <span class="s2">&quot;DOLLY_OUT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TRUCK&quot;</span><span class="p">,</span> <span class="s2">&quot;PEDESTAL&quot;</span><span class="p">,</span> <span class="s2">&quot;ZOOM&quot;</span><span class="p">,</span> <span class="s2">&quot;CRANE&quot;</span><span class="p">,</span> <span class="s2">&quot;HANDHELD&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;WHIP_PAN&quot;</span><span class="p">,</span> <span class="s2">&quot;DOLLY_ZOOM&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Spec §6.3 movement taxonomy. ``LOCKED`` is the default in practice.&quot;&quot;&quot;</span>
 
 
 <span class="n">DurationSource</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;estimate&quot;</span><span class="p">,</span> <span class="s2">&quot;from_voiceover&quot;</span><span class="p">,</span> <span class="s2">&quot;from_clip&quot;</span><span class="p">,</span> <span class="s2">&quot;manual&quot;</span><span class="p">]</span>
@@ -312,6 +339,38 @@
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
             <span class="s1">&#39;&quot;verb-clause&quot; | &quot;shot-reverse-shot&quot; | &quot;just-before/after&quot; | &#39;</span>
             <span class="s1">&#39;&quot;montage&quot; | … (spec §7.1).&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># --- Shot grammar (spec §6.3) — controlled vocabulary -------------</span>
+    <span class="c1"># Distinct from the free-text ``framing`` / ``camera`` fields above.</span>
+    <span class="c1"># Set deterministically by the shot-grammar advisor (reelee §6.3 rule</span>
+    <span class="c1"># table) and read by the prompt builder&#39;s ``shot_size`` / ``angle``</span>
+    <span class="c1"># slots. All Optional / None-default — additive, no migration needed.</span>
+    <span class="n">shot_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ShotSize</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Controlled shot-size taxonomy value (spec §6.3): ECU/CU/MCU/&quot;</span>
+            <span class="s2">&quot;MS/MWS/WS/LS/ELS/INSERT/TWO_SHOT/THREE_SHOT/GROUP/MASTER. &quot;</span>
+            <span class="s2">&quot;Set by the shot-grammar advisor from the beat&#39;s semantic tag &quot;</span>
+            <span class="s2">&quot;and action line; consumed by ``panel_to_prompt`` for a stable &quot;</span>
+            <span class="s2">&quot;``shot_size`` slot. Distinct from the free-text ``framing``.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Angle</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Controlled angle taxonomy value (spec §6.3): EYE_LEVEL/HIGH/&quot;</span>
+            <span class="s2">&quot;LOW/DUTCH/BIRDS_EYE/WORMS_EYE/PROFILE/THREE_QUARTER/OTS/POV. &quot;</span>
+            <span class="s2">&quot;Distinct from the free-text ``camera`` field.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">movement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Movement</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Controlled camera-movement taxonomy value (spec §6.3): LOCKED/&quot;</span>
+            <span class="s2">&quot;PAN/TILT/DOLLY_IN/DOLLY_OUT/TRUCK/PEDESTAL/ZOOM/CRANE/HANDHELD/&quot;</span>
+            <span class="s2">&quot;WHIP_PAN/DOLLY_ZOOM. ``LOCKED`` is the practical default for &quot;</span>
+            <span class="s2">&quot;static boards; AI-cinematic intents read it for motion prompts.&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">duration_seconds_estimate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -504,7 +563,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright NO COPYRIGHT.</p>
+    <p></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

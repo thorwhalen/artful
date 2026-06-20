@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.exports &mdash; artful 0.0.6 documentation</title>
+  <title>artful.exports &mdash; artful 0.0.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1fd71caa"></script>
+      <script src="../../_static/documentation_options.js?v=bbaf98b3"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -98,11 +98,26 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">html</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_html</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">get_args</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeInterval</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">PanelBody</span><span class="p">,</span> <span class="n">PanelImage</span><span class="p">,</span> <span class="n">Storyboard</span><span class="p">,</span> <span class="n">new_panel_id</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Angle</span><span class="p">,</span>
+    <span class="n">Movement</span><span class="p">,</span>
+    <span class="n">PanelBody</span><span class="p">,</span>
+    <span class="n">PanelImage</span><span class="p">,</span>
+    <span class="n">ShotSize</span><span class="p">,</span>
+    <span class="n">Storyboard</span><span class="p">,</span>
+    <span class="n">new_panel_id</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Controlled shot-grammar vocabularies (spec §6.3). Used by ``from_markdown``</span>
+<span class="c1"># to validate parsed values and degrade gracefully (None) on unknown input.</span>
+<span class="n">_SHOT_SIZES</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">ShotSize</span><span class="p">))</span>
+<span class="n">_ANGLES</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">Angle</span><span class="p">))</span>
+<span class="n">_MOVEMENTS</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">get_args</span><span class="p">(</span><span class="n">Movement</span><span class="p">))</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -145,6 +160,14 @@
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- framing: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span>
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- camera: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Controlled shot-grammar vocabulary (spec §6.3) — distinct from the</span>
+        <span class="c1"># free-text framing/camera above.</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- shot_size: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- angle: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- movement: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">movement</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="o">!=</span> <span class="s2">&quot;cut&quot;</span><span class="p">:</span>
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- transition: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
@@ -200,6 +223,9 @@
     <span class="n">current_shot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">current_framing</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">current_camera</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">current_shot_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">current_angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">current_movement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">current_transition</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>
     <span class="n">current_caption_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">current_notes</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -217,6 +243,9 @@
             <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">current_caption_lines</span> <span class="k">if</span> <span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
             <span class="n">framing</span><span class="o">=</span><span class="n">current_framing</span><span class="p">,</span>
             <span class="n">camera</span><span class="o">=</span><span class="n">current_camera</span><span class="p">,</span>
+            <span class="n">shot_size</span><span class="o">=</span><span class="n">current_shot_size</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+            <span class="n">angle</span><span class="o">=</span><span class="n">current_angle</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
+            <span class="n">movement</span><span class="o">=</span><span class="n">current_movement</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
             <span class="n">transition_in</span><span class="o">=</span><span class="n">current_transition</span><span class="p">,</span>
             <span class="n">notes</span><span class="o">=</span><span class="n">current_notes</span><span class="p">,</span>
         <span class="p">)</span>
@@ -239,6 +268,9 @@
             <span class="n">current_shot</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">current_framing</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="n">current_camera</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">current_shot_size</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">current_angle</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">current_movement</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">current_transition</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>
             <span class="n">current_caption_lines</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">current_notes</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -271,6 +303,12 @@
                 <span class="n">current_framing</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;camera&quot;</span><span class="p">:</span>
                 <span class="n">current_camera</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;shot_size&quot;</span><span class="p">:</span>
+                <span class="n">current_shot_size</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_SHOT_SIZES</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;angle&quot;</span><span class="p">:</span>
+                <span class="n">current_angle</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_ANGLES</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;movement&quot;</span><span class="p">:</span>
+                <span class="n">current_movement</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_MOVEMENTS</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;transition&quot;</span><span class="p">:</span>
                 <span class="n">current_transition</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">continue</span>
@@ -383,6 +421,12 @@
             <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span>
             <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="p">:</span>
+            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="p">:</span>
+            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span> <span class="o">!=</span> <span class="s2">&quot;LOCKED&quot;</span><span class="p">:</span>
+            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">movement</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="o">!=</span> <span class="s2">&quot;cut&quot;</span><span class="p">:</span>
             <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;transition: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">meta_bits</span><span class="p">:</span>
@@ -406,7 +450,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright NO COPYRIGHT.</p>
+    <p></p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
