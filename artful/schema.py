@@ -64,6 +64,33 @@ MomentTiming = Literal["entry", "mid", "apex", "exit"]
 """Spec §7.2 — where in the implied motion the depicted frame sits."""
 
 
+ShotSize = Literal[
+    "ECU", "CU", "MCU", "MS", "MWS", "WS", "LS", "ELS",
+    "INSERT", "TWO_SHOT", "THREE_SHOT", "GROUP", "MASTER",
+]
+"""Spec §6.3 shot-size taxonomy. Controlled vocabulary — distinct from the
+free-text :attr:`PanelBody.framing` field. This is the single source of truth
+for the storyboard-panel schema; ``reelee.bodies.shot`` re-exports these so the
+shot-grammar advisor and the panel body share one vocabulary."""
+
+
+Angle = Literal[
+    "EYE_LEVEL", "HIGH", "LOW", "DUTCH",
+    "BIRDS_EYE", "WORMS_EYE", "PROFILE", "THREE_QUARTER",
+    "OTS", "POV",
+]
+"""Spec §6.3 / §9.3 angle taxonomy. Controlled vocabulary — distinct from the
+free-text :attr:`PanelBody.camera` field."""
+
+
+Movement = Literal[
+    "LOCKED", "PAN", "TILT", "DOLLY_IN", "DOLLY_OUT",
+    "TRUCK", "PEDESTAL", "ZOOM", "CRANE", "HANDHELD",
+    "WHIP_PAN", "DOLLY_ZOOM",
+]
+"""Spec §6.3 movement taxonomy. ``LOCKED`` is the default in practice."""
+
+
 DurationSource = Literal["estimate", "from_voiceover", "from_clip", "manual"]
 """Spec §7.5 — provenance of a panel's duration field. ``manual``
 indicates the user overrode the estimate."""
@@ -228,6 +255,38 @@ class PanelBody(BaseModel):
         description=(
             '"verb-clause" | "shot-reverse-shot" | "just-before/after" | '
             '"montage" | … (spec §7.1).'
+        ),
+    )
+    # --- Shot grammar (spec §6.3) — controlled vocabulary -------------
+    # Distinct from the free-text ``framing`` / ``camera`` fields above.
+    # Set deterministically by the shot-grammar advisor (reelee §6.3 rule
+    # table) and read by the prompt builder's ``shot_size`` / ``angle``
+    # slots. All Optional / None-default — additive, no migration needed.
+    shot_size: Optional[ShotSize] = Field(
+        None,
+        description=(
+            "Controlled shot-size taxonomy value (spec §6.3): ECU/CU/MCU/"
+            "MS/MWS/WS/LS/ELS/INSERT/TWO_SHOT/THREE_SHOT/GROUP/MASTER. "
+            "Set by the shot-grammar advisor from the beat's semantic tag "
+            "and action line; consumed by ``panel_to_prompt`` for a stable "
+            "``shot_size`` slot. Distinct from the free-text ``framing``."
+        ),
+    )
+    angle: Optional[Angle] = Field(
+        None,
+        description=(
+            "Controlled angle taxonomy value (spec §6.3): EYE_LEVEL/HIGH/"
+            "LOW/DUTCH/BIRDS_EYE/WORMS_EYE/PROFILE/THREE_QUARTER/OTS/POV. "
+            "Distinct from the free-text ``camera`` field."
+        ),
+    )
+    movement: Optional[Movement] = Field(
+        None,
+        description=(
+            "Controlled camera-movement taxonomy value (spec §6.3): LOCKED/"
+            "PAN/TILT/DOLLY_IN/DOLLY_OUT/TRUCK/PEDESTAL/ZOOM/CRANE/HANDHELD/"
+            "WHIP_PAN/DOLLY_ZOOM. ``LOCKED`` is the practical default for "
+            "static boards; AI-cinematic intents read it for motion prompts."
         ),
     )
     duration_seconds_estimate: Optional[float] = Field(

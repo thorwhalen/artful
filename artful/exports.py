@@ -19,11 +19,26 @@ from __future__ import annotations
 
 import html as _html
 import re
-from typing import Optional
+from typing import Optional, get_args
 
 from lacing import TimeInterval
 
-from .schema import PanelBody, PanelImage, Storyboard, new_panel_id
+from .schema import (
+    Angle,
+    Movement,
+    PanelBody,
+    PanelImage,
+    ShotSize,
+    Storyboard,
+    new_panel_id,
+)
+
+
+# Controlled shot-grammar vocabularies (spec §6.3). Used by ``from_markdown``
+# to validate parsed values and degrade gracefully (None) on unknown input.
+_SHOT_SIZES: frozenset[str] = frozenset(get_args(ShotSize))
+_ANGLES: frozenset[str] = frozenset(get_args(Angle))
+_MOVEMENTS: frozenset[str] = frozenset(get_args(Movement))
 
 
 # ---------------------------------------------------------------------------
@@ -64,6 +79,14 @@ def to_markdown(
             out.append(f"- framing: {panel.framing}")
         if panel.camera:
             out.append(f"- camera: {panel.camera}")
+        # Controlled shot-grammar vocabulary (spec §6.3) — distinct from the
+        # free-text framing/camera above.
+        if panel.shot_size:
+            out.append(f"- shot_size: {panel.shot_size}")
+        if panel.angle:
+            out.append(f"- angle: {panel.angle}")
+        if panel.movement:
+            out.append(f"- movement: {panel.movement}")
         if panel.transition_in and panel.transition_in != "cut":
             out.append(f"- transition: {panel.transition_in}")
         out.append("")
@@ -116,6 +139,9 @@ def from_markdown(
     current_shot: Optional[str] = None
     current_framing = ""
     current_camera = ""
+    current_shot_size: Optional[str] = None
+    current_angle: Optional[str] = None
+    current_movement: Optional[str] = None
     current_transition = "cut"
     current_caption_lines: list[str] = []
     current_notes = ""
@@ -133,6 +159,9 @@ def from_markdown(
             caption="\n".join(l for l in current_caption_lines if l).strip(),
             framing=current_framing,
             camera=current_camera,
+            shot_size=current_shot_size,  # type: ignore[arg-type]
+            angle=current_angle,  # type: ignore[arg-type]
+            movement=current_movement,  # type: ignore[arg-type]
             transition_in=current_transition,
             notes=current_notes,
         )
@@ -155,6 +184,9 @@ def from_markdown(
             current_shot = None
             current_framing = ""
             current_camera = ""
+            current_shot_size = None
+            current_angle = None
+            current_movement = None
             current_transition = "cut"
             current_caption_lines = []
             current_notes = ""
@@ -187,6 +219,12 @@ def from_markdown(
                 current_framing = value
             elif key == "camera":
                 current_camera = value
+            elif key == "shot_size":
+                current_shot_size = value if value in _SHOT_SIZES else None
+            elif key == "angle":
+                current_angle = value if value in _ANGLES else None
+            elif key == "movement":
+                current_movement = value if value in _MOVEMENTS else None
             elif key == "transition":
                 current_transition = value
             continue
@@ -296,6 +334,12 @@ h1 { margin-bottom: 0.25rem; }
             meta_bits.append(_html.escape(panel.framing))
         if panel.camera:
             meta_bits.append(_html.escape(panel.camera))
+        if panel.shot_size:
+            meta_bits.append(_html.escape(panel.shot_size))
+        if panel.angle:
+            meta_bits.append(_html.escape(panel.angle))
+        if panel.movement and panel.movement != "LOCKED":
+            meta_bits.append(_html.escape(panel.movement))
         if panel.transition_in and panel.transition_in != "cut":
             meta_bits.append(f"transition: {_html.escape(panel.transition_in)}")
         if meta_bits:

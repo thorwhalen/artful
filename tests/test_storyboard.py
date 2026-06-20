@@ -244,3 +244,69 @@ def test_html_escapes_special_chars():
     assert "&lt;hostile&gt;" in html
     assert "<script>" not in html
     assert "&lt;script&gt;" in html
+
+
+# --- shot grammar (spec §6.3) controlled-vocabulary fields ----------------
+
+
+def test_panel_accepts_shot_grammar_fields():
+    p = PanelBody(panel_id="p1", shot_size="CU", angle="OTS", movement="DOLLY_IN")
+    assert p.shot_size == "CU"
+    assert p.angle == "OTS"
+    assert p.movement == "DOLLY_IN"
+    # Distinct from the free-text framing/camera fields.
+    assert p.framing == ""
+    assert p.camera == ""
+    # Validates as a storyboard-panel body in lacing.
+    validate_body(p.model_dump(), PANEL_BODY_SCHEMA_URI)
+
+
+def test_shot_grammar_defaults_none():
+    p = PanelBody(panel_id="p1")
+    assert p.shot_size is None
+    assert p.angle is None
+    assert p.movement is None
+
+
+def test_panel_rejects_invalid_shot_grammar_value():
+    with pytest.raises(Exception):
+        PanelBody(panel_id="p1", shot_size="HUGE")  # not in the taxonomy
+
+
+def test_markdown_round_trip_preserves_shot_grammar():
+    sb = Storyboard(
+        title="t",
+        asset_id="x",
+        panels=(
+            PanelBody(
+                panel_id="p1",
+                shot_size="WS",
+                angle="LOW",
+                movement="PAN",
+                framing="wide",
+                camera="pan-left",
+            ),
+            PanelBody(panel_id="p2"),  # no shot grammar — stays None
+        ),
+    )
+    md = to_markdown(sb)
+    assert "shot_size: WS" in md
+    assert "angle: LOW" in md
+    assert "movement: PAN" in md
+    sb2, _ = from_markdown(md)
+    p1 = sb2.panel("p1")
+    assert p1.shot_size == "WS"
+    assert p1.angle == "LOW"
+    assert p1.movement == "PAN"
+    p2 = sb2.panel("p2")
+    assert p2.shot_size is None
+    assert p2.angle is None
+    assert p2.movement is None
+
+
+def test_markdown_unknown_shot_grammar_degrades_to_none():
+    # A corrupt / hand-edited markdown value should degrade gracefully, not
+    # raise — matching how the rest of the adapter tolerates bad input.
+    md = "# t\n\n- asset_id: `x`\n\n## panel p1\n\n- shot_size: BOGUS\n\ncap\n"
+    sb, _ = from_markdown(md)
+    assert sb.panel("p1").shot_size is None
