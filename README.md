@@ -151,17 +151,89 @@ A small `StoryboardMetaBody` schema (URI
 `annot://schema/storyboard-meta/v1`) carries title / style / aspect as a
 single timeless annotation alongside the panels.
 
+## The shot schedule
+
+Before there are panels there is a **shot schedule**: an ordered list of
+shots, each carrying the constraints a downstream planner must respect, and
+the advisory *risk flags* raised when those constraints collide with the
+chosen video model's real limits.
+
+```python
+from artful import (
+    RiskFlag, ShotEntry, ShotScheduleBody,
+    save_shot_schedule, load_shot_schedule,
+)
+
+sched = ShotScheduleBody(
+    schedule_id="sch-001",
+    title="Scene 4 — the pub",
+    model_id="fal-ai/bytedance/seedance/v1/pro/image-to-video",  # a reference
+    aspect="16:9",
+    resolution="720p",
+    shots=(
+        ShotEntry(
+            shot_id="sh-01",
+            description="Mairead pushes the door open.",
+            characters=("Mairead",),
+            shot_size="MS",
+            duration_seconds_estimate=6.0,
+            max_duration_seconds=8.0,
+            max_characters_in_frame=1,
+            take_budget=3,
+            clump_id="pub-interior",
+        ),
+        ShotEntry(
+            shot_id="sh-02",
+            characters=("Mairead", "Declan"),
+            duration_seconds_estimate=14.0,
+            has_dialogue=True,
+            risk_flags=(
+                RiskFlag(
+                    code="over_clip_cap",
+                    message="~14s is over this model's ~10s clip cap.",
+                    gotcha_id="seedance-clip-length-cap",
+                ),
+            ),
+        ),
+    ),
+)
+
+save_shot_schedule(sched, store, asset_id="song-asset-id-abc")
+loaded = load_shot_schedule(store, asset_id="song-asset-id-abc")
+```
+
+Three sources of truth, deliberately kept apart:
+
+| what | who owns it |
+|------|-------------|
+| What a **model** can do (`max_clip_seconds`, `single_character_recommended`, `supported_resolutions`, …) | the model registry downstream — referenced here by `model_id`, **never copied**. |
+| What a **shot** requires (`max_duration_seconds`, `max_characters_in_frame`, `aspect`, `resolution`, `take_budget`) | `ShotEntry`. |
+| What happens when the two **collide** | `RiskFlag` — a cached verdict, stamped with `advised_for_model_id` so a model change makes it visibly stale via `schedule.needs_advice`. |
+
+Ordering is the tuple order of `shots` — there is deliberately no `order`
+field to disagree with it, and no `character_count` field to drift from
+`len(characters)`. Constraint defaults encode the safe choice:
+`allow_last_frame_anchor` is `False`, because anchoring both a first and a
+last frame contorts the subject mid-clip.
+
+The schedule persists as a **single** timeless annotation under
+`annot://schema/shot-schedule/v1` — a schedule exists *before* times are
+pinned, which is exactly what `duration_seconds_estimate` is for.
+
 ## API surface
 
 ```python
 from artful import (
     # data model
     Storyboard, PanelBody, PanelImage,
-    new_panel_id,
+    ModelSheet,
+    ShotScheduleBody, ShotEntry, RiskFlag,
+    new_panel_id, new_shot_id, new_schedule_id,
 
     # persistence (round-trip with any lacing.IntervalAnnotationStore)
     save_storyboard, load_storyboard,
     panel_intervals_from_panels,
+    save_shot_schedule, load_shot_schedule, load_shot_schedules,
 
     # exports
     to_markdown, from_markdown,
@@ -170,6 +242,8 @@ from artful import (
     # body-schema URIs
     PANEL_BODY_SCHEMA_URI,
     STORYBOARD_META_BODY_SCHEMA_URI,
+    MODEL_SHEET_BODY_SCHEMA_URI,
+    SHOT_SCHEDULE_BODY_SCHEMA_URI,
     StoryboardMetaBody,
 )
 ```
