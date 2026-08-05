@@ -112,7 +112,7 @@ def save_storyboard(
         The list of persisted :class:`Annotation` instances (panels, then meta).
     """
     out: list[Annotation] = []
-    prov = _make_prov(was_generated_by, was_attributed_to)
+    prov = make_prov(was_generated_by, was_attributed_to)
 
     for panel in storyboard.panels:
         if panel.panel_id not in panel_intervals:
@@ -218,7 +218,10 @@ def panel_intervals_from_panels(
 # ---------------------------------------------------------------------------
 
 
-def _make_prov(was_generated_by: str, was_attributed_to: str) -> Provenance:
+def make_prov(was_generated_by: str, was_attributed_to: str) -> Provenance:
+    """Build the create-activity :class:`lacing.Provenance` artful stamps on
+    every annotation it persists. Package-internal (not in ``artful.__all__``);
+    shared by :mod:`artful.store` and :mod:`artful.shot_schedule`."""
     return Provenance(
         was_generated_by=was_generated_by,
         was_attributed_to=was_attributed_to,
