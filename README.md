@@ -27,8 +27,12 @@ Requires `pydantic>=2.6` and `lacing>=0.0.13`.
 
 ```python
 from artful import (
-    PanelBody, PanelImage, Storyboard,
-    panel_intervals_from_panels, save_storyboard, load_storyboard,
+    PanelBody,
+    PanelImage,
+    Storyboard,
+    panel_intervals_from_panels,
+    save_storyboard,
+    load_storyboard,
 )
 from lacing import MemoryStore
 
@@ -53,10 +57,12 @@ sb = Storyboard(
 )
 
 # Pin each panel to a time interval (seconds on the master timeline).
-intervals = panel_intervals_from_panels([
-    ("p1", 0.0, 4.0),
-    ("p2", 4.0, 8.0),
-])
+intervals = panel_intervals_from_panels(
+    [
+        ("p1", 0.0, 4.0),
+        ("p2", 4.0, 8.0),
+    ]
+)
 
 store = MemoryStore()
 save_storyboard(sb, store, panel_intervals=intervals)
@@ -160,8 +166,11 @@ chosen video model's real limits.
 
 ```python
 from artful import (
-    RiskFlag, ShotEntry, ShotScheduleBody,
-    save_shot_schedule, load_shot_schedule,
+    RiskFlag,
+    ShotEntry,
+    ShotScheduleBody,
+    save_shot_schedule,
+    load_shot_schedule,
 )
 
 sched = ShotScheduleBody(
@@ -225,20 +234,27 @@ pinned, which is exactly what `duration_seconds_estimate` is for.
 ```python
 from artful import (
     # data model
-    Storyboard, PanelBody, PanelImage,
+    Storyboard,
+    PanelBody,
+    PanelImage,
     ModelSheet,
-    ShotScheduleBody, ShotEntry, RiskFlag,
-    new_panel_id, new_shot_id, new_schedule_id,
-
+    ShotScheduleBody,
+    ShotEntry,
+    RiskFlag,
+    new_panel_id,
+    new_shot_id,
+    new_schedule_id,
     # persistence (round-trip with any lacing.IntervalAnnotationStore)
-    save_storyboard, load_storyboard,
+    save_storyboard,
+    load_storyboard,
     panel_intervals_from_panels,
-    save_shot_schedule, load_shot_schedule, load_shot_schedules,
-
+    save_shot_schedule,
+    load_shot_schedule,
+    load_shot_schedules,
     # exports
-    to_markdown, from_markdown,
+    to_markdown,
+    from_markdown,
     to_html,
-
     # body-schema URIs
     PANEL_BODY_SCHEMA_URI,
     STORYBOARD_META_BODY_SCHEMA_URI,

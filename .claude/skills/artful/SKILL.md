@@ -49,17 +49,17 @@ from artful import Storyboard, PanelBody, PanelImage, new_panel_id
 
 sb = Storyboard(
     title="The Bells — v1",
-    asset_id="song-asset-id-abc",   # the master timeline this storyboard plots
-    style="noir, candlelight",      # global visual-style hint
+    asset_id="song-asset-id-abc",  # the master timeline this storyboard plots
+    style="noir, candlelight",  # global visual-style hint
     aspect="16:9",
     panels=(
         PanelBody(
             panel_id="p1",
-            shot_id="s01",          # optional: pointer to a shot in your project graph
+            shot_id="s01",  # optional: pointer to a shot in your project graph
             caption="Thor at the piano",
-            framing="medium",       # wide | medium | close | ecu | insert | ots
-            camera="static",        # static | slow push-in | pan-left | ...
-            transition_in="cut",    # cut (default) | fade | match-cut | ...
+            framing="medium",  # wide | medium | close | ecu | insert | ots
+            camera="static",  # static | slow push-in | pan-left | ...
+            transition_in="cut",  # cut (default) | fade | match-cut | ...
             images=(
                 PanelImage(path="composite.png", role="seed"),
                 PanelImage(url="https://x/thumb.png", role="thumbnail"),
@@ -82,18 +82,21 @@ supply intervals separately:
 
 ```python
 from artful import save_storyboard, panel_intervals_from_panels
-from lacing import MemoryStore   # or SQLiteStore, PostgresStore, ...
+from lacing import MemoryStore  # or SQLiteStore, PostgresStore, ...
 
-intervals = panel_intervals_from_panels([
-    ("p1", 0.0, 4.0),
-    ("p2", 4.0, 8.0),
-])
+intervals = panel_intervals_from_panels(
+    [
+        ("p1", 0.0, 4.0),
+        ("p2", 4.0, 8.0),
+    ]
+)
 
 store = MemoryStore()
 save_storyboard(
-    sb, store,
+    sb,
+    store,
     panel_intervals=intervals,
-    tier="storyboard",                    # default — see "Multiple storyboards" below
+    tier="storyboard",  # default — see "Multiple storyboards" below
     was_attributed_to="user:thor",
     was_generated_by="agent:artful",
 )
@@ -114,7 +117,7 @@ from artful import load_storyboard
 loaded = load_storyboard(
     store,
     asset_id="song-asset-id-abc",
-    tier="storyboard",            # default
+    tier="storyboard",  # default
 )
 ```
 
@@ -159,7 +162,7 @@ For a quick browser review:
 from artful import to_html
 
 with open("storyboard.html", "w") as f:
-    f.write(to_html(sb, intervals))   # intervals is optional
+    f.write(to_html(sb, intervals))  # intervals is optional
 ```
 
 The output is a self-contained HTML page; image refs become `<img>` tags

@@ -70,7 +70,7 @@ Rules at a glance:
 ## Render to Markdown
 
 ```python
-md = to_markdown(sb, panel_intervals)   # intervals is optional
+md = to_markdown(sb, panel_intervals)  # intervals is optional
 ```
 
 Omit `panel_intervals` when panels haven't been pinned yet — the headings
