@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.store &mdash; artful 0.0.7 documentation</title>
+  <title>artful.store &mdash; artful 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -24,7 +24,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="artful.schema" href="schema.html" /> 
+    <link rel="prev" title="artful.shot_schedule" href="shot_schedule.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,12 +51,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../artful.html">artful</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exports.html">artful.exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schema.html">artful.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="shot_schedule.html">artful.shot_schedule</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">artful.store</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#artful.store.StoryboardMetaBody"><code class="docutils literal notranslate"><span class="pre">StoryboardMetaBody</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#artful.store.StoryboardMetaBody.model_config"><code class="docutils literal notranslate"><span class="pre">StoryboardMetaBody.model_config</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#artful.store.load_storyboard"><code class="docutils literal notranslate"><span class="pre">load_storyboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.store.make_prov"><code class="docutils literal notranslate"><span class="pre">make_prov()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#artful.store.panel_intervals_from_panels"><code class="docutils literal notranslate"><span class="pre">panel_intervals_from_panels()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#artful.store.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
 </ul>
@@ -126,6 +128,14 @@ Panels are returned ordered by interval start.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="artful.store.make_prov">
+<span class="sig-prename descclassname"><span class="pre">artful.store.</span></span><span class="sig-name descname"><span class="pre">make_prov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">was_generated_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Provenance</span></span></span><a class="reference internal" href="../../_modules/artful/store.html#make_prov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.store.make_prov" title="Link to this definition"></a></dt>
+<dd><p>Build the create-activity <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Provenance</span></code> artful stamps on
+every annotation it persists. Package-internal (not in <code class="docutils literal notranslate"><span class="pre">artful.__all__</span></code>);
+shared by <a class="reference internal" href="#module-artful.store" title="artful.store"><code class="xref py py-mod docutils literal notranslate"><span class="pre">artful.store</span></code></a> and <a class="reference internal" href="shot_schedule.html#module-artful.shot_schedule" title="artful.shot_schedule"><code class="xref py py-mod docutils literal notranslate"><span class="pre">artful.shot_schedule</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="artful.store.panel_intervals_from_panels">
 <span class="sig-prename descclassname"><span class="pre">artful.store.</span></span><span class="sig-name descname"><span class="pre">panel_intervals_from_panels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">panels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TimeInterval</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/artful/store.html#panel_intervals_from_panels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.store.panel_intervals_from_panels" title="Link to this definition"></a></dt>
 <dd><p>Convenience: build the panel_intervals dict for <a class="reference internal" href="#artful.store.save_storyboard" title="artful.store.save_storyboard"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a>.</p>
@@ -165,7 +175,7 @@ every persisted annotation.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="schema.html" class="btn btn-neutral float-left" title="artful.schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="shot_schedule.html" class="btn btn-neutral float-left" title="artful.shot_schedule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

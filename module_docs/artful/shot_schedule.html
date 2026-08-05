@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>artful.shot_schedule &mdash; artful 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="artful.store" href="store.html" />
+    <link rel="prev" title="artful.schema" href="schema.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            artful
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../artful.html">artful</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exports.html">artful.exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">artful.schema</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">artful.shot_schedule</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#three-sources-of-truth-deliberately-kept-apart">Three sources of truth, deliberately kept apart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.RiskCode"><code class="docutils literal notranslate"><span class="pre">RiskCode</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.RiskFlag"><code class="docutils literal notranslate"><span class="pre">RiskFlag</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#artful.shot_schedule.RiskFlag.model_config"><code class="docutils literal notranslate"><span class="pre">RiskFlag.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.RiskSeverity"><code class="docutils literal notranslate"><span class="pre">RiskSeverity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.SHOT_SCHEDULE_TIER"><code class="docutils literal notranslate"><span class="pre">SHOT_SCHEDULE_TIER</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.ShotEntry"><code class="docutils literal notranslate"><span class="pre">ShotEntry</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#artful.shot_schedule.ShotEntry.model_config"><code class="docutils literal notranslate"><span class="pre">ShotEntry.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody"><code class="docutils literal notranslate"><span class="pre">ShotScheduleBody</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody.model_config"><code class="docutils literal notranslate"><span class="pre">ShotScheduleBody.model_config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody.needs_advice"><code class="docutils literal notranslate"><span class="pre">ShotScheduleBody.needs_advice</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody.shot"><code class="docutils literal notranslate"><span class="pre">ShotScheduleBody.shot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.load_shot_schedule"><code class="docutils literal notranslate"><span class="pre">load_shot_schedule()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.load_shot_schedules"><code class="docutils literal notranslate"><span class="pre">load_shot_schedules()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.new_schedule_id"><code class="docutils literal notranslate"><span class="pre">new_schedule_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.new_shot_id"><code class="docutils literal notranslate"><span class="pre">new_shot_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.shot_schedule.save_shot_schedule"><code class="docutils literal notranslate"><span class="pre">save_shot_schedule()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="store.html">artful.store</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">artful</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">artful.shot_schedule</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/artful/shot_schedule.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-artful.shot_schedule">
+<span id="artful-shot-schedule"></span><h1>artful.shot_schedule<a class="headerlink" href="#module-artful.shot_schedule" title="Link to this heading"></a></h1>
+<p>Shot schedule — an ordered, model-constraint-aware shot list.</p>
+<p>A <em>shot schedule</em> is the planning document that sits between a scene
+breakdown and a storyboard: an ordered list of shots, each carrying the
+constraints a downstream planner must respect (clip-length cap, how many
+characters may share the frame, aspect / resolution, how many takes the
+shot is allowed to burn) plus the advisory <em>risk flags</em> raised when those
+constraints collide with the chosen video model’s real limits.</p>
+<p>Persisted as a <strong>single</strong> <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Annotation</span></code> with body schema
+<code class="docutils literal notranslate"><span class="pre">annot://schema/shot-schedule/v1</span></code>. One annotation, not one per shot,
+because a schedule exists <em>before</em> times are pinned — the ordering is the
+tuple order of <code class="xref py py-attr docutils literal notranslate"><span class="pre">ShotScheduleBody.shots</span></code>, not an interval sort.</p>
+<section id="three-sources-of-truth-deliberately-kept-apart">
+<h2>Three sources of truth, deliberately kept apart<a class="headerlink" href="#three-sources-of-truth-deliberately-kept-apart" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>what</p></th>
+<th class="head"><p>who owns it</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>what a <em>model</em> can do</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">falaw</span></code>’s model registry
+(<code class="docutils literal notranslate"><span class="pre">max_clip_seconds</span></code>,
+<code class="docutils literal notranslate"><span class="pre">single_character_recommended</span></code>,
+<code class="docutils literal notranslate"><span class="pre">supported_resolutions</span></code>, …). Referenced
+here by <code class="xref py py-attr docutils literal notranslate"><span class="pre">ShotScheduleBody.model_id</span></code>
+— <strong>never copied</strong>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>what a <em>shot</em> requires</p></td>
+<td><p>this schema (<code class="docutils literal notranslate"><span class="pre">max_duration_seconds</span></code>,
+<code class="docutils literal notranslate"><span class="pre">max_characters_in_frame</span></code>, <code class="docutils literal notranslate"><span class="pre">aspect</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resolution</span></code>, <code class="docutils literal notranslate"><span class="pre">take_budget</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p>what happens when they</p></td>
+<td><p><a class="reference internal" href="#artful.shot_schedule.RiskFlag" title="artful.shot_schedule.RiskFlag"><code class="xref py py-class docutils literal notranslate"><span class="pre">RiskFlag</span></code></a> — the cached verdict of</p></td>
+</tr>
+<tr class="row-odd"><td><p>collide</p></td>
+<td><p>comparing the two. Computed by reelee’s
+shot advisor; stamped with
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">ShotScheduleBody.advised_for_model_id</span></code>
+so a model change makes the flags visibly
+stale (<a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody.needs_advice" title="artful.shot_schedule.ShotScheduleBody.needs_advice"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ShotScheduleBody.needs_advice</span></code></a>).</p></td>
+</tr>
+</tbody>
+</table>
+<p>Vocabulary is shared, not re-invented: shot grammar (<code class="docutils literal notranslate"><span class="pre">shot_size</span></code> /
+<code class="docutils literal notranslate"><span class="pre">angle</span></code> / <code class="docutils literal notranslate"><span class="pre">movement</span></code>) reuses the controlled taxonomies defined in
+<a class="reference internal" href="schema.html#module-artful.schema" title="artful.schema"><code class="xref py py-mod docutils literal notranslate"><span class="pre">artful.schema</span></code></a>; <code class="docutils literal notranslate"><span class="pre">duration_seconds_estimate</span></code> / <code class="docutils literal notranslate"><span class="pre">duration_source</span></code>
+reuse the names already on <a class="reference internal" href="../artful.html#artful.PanelBody" title="artful.PanelBody"><code class="xref py py-class docutils literal notranslate"><span class="pre">artful.PanelBody</span></code></a>; characters are named
+by their <code class="docutils literal notranslate"><span class="pre">character-ref</span></code> name (the schema for <code class="docutils literal notranslate"><span class="pre">character-ref/v1</span></code> lives
+in <code class="docutils literal notranslate"><span class="pre">nw</span></code>), matching <code class="xref py py-attr docutils literal notranslate"><span class="pre">artful.PanelBody.moment_focal_character_ref</span></code>;
+and <code class="xref py py-attr docutils literal notranslate"><span class="pre">RiskFlag.gotcha_id</span></code> points into reelee’s tool-gotchas registry
+rather than restating the mitigation prose here.</p>
+<p>Plan vs realization: when a shot entry names a <code class="docutils literal notranslate"><span class="pre">panel_id</span></code> / <code class="docutils literal notranslate"><span class="pre">shot_id</span></code>,
+those annotations are authoritative for the <em>realized</em> shot. The grammar
+fields here are the <em>planned</em> values — what the schedule intends before a
+panel exists.</p>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="artful.shot_schedule.RiskCode">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">RiskCode</span></span><a class="headerlink" href="#artful.shot_schedule.RiskCode" title="Link to this definition"></a></dt>
+<dd><p>Controlled vocabulary of advisory flags a shot advisor may raise.</p>
+<p><code class="docutils literal notranslate"><span class="pre">over_clip_cap</span></code> and <code class="docutils literal notranslate"><span class="pre">multi_character</span></code> are <strong>the same strings</strong> the
+reelee shot advisor already emits as <code class="docutils literal notranslate"><span class="pre">ShotWarning.code</span></code>; do not rename
+them — one code vocabulary across the federation, not two. The rest name
+pitfalls that are already curated entries in reelee’s tool-gotchas
+registry (<code class="docutils literal notranslate"><span class="pre">seedance-first-last-frame-contortion</span></code>,
+<code class="docutils literal notranslate"><span class="pre">seedance-dialogue-plus-action-degrades</span></code>, <code class="docutils literal notranslate"><span class="pre">regen-full-price</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resolution-cost-tradeoff</span></code>, <code class="docutils literal notranslate"><span class="pre">aspect-ratio-crop-surprise</span></code>).</p>
+<p>Closed vocabulary, per artful convention: adding a code is an additive
+schema change, made deliberately.</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code>[‘over_clip_cap’, ‘multi_character’, ‘first_last_frame’, ‘dialogue_plus_action’, ‘over_take_budget’, ‘unsupported_resolution’, ‘mixed_aspect_ratios’]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="artful.shot_schedule.RiskFlag">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">RiskFlag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'over_clip_cap'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'multi_character'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'first_last_frame'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dialogue_plus_action'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'over_take_budget'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unsupported_resolution'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mixed_aspect_ratios'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'info'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'warn'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'warn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gotcha_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#RiskFlag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.RiskFlag" title="Link to this definition"></a></dt>
+<dd><p>One advisory warning attached to a shot (or to the whole schedule).</p>
+<p>A <em>cached verdict</em>, not a constraint: it records that this shot’s
+requirements collided with the limits of the model named by
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">ShotScheduleBody.advised_for_model_id</span></code>. Re-advise after
+changing the model — <a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody.needs_advice" title="artful.shot_schedule.ShotScheduleBody.needs_advice"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ShotScheduleBody.needs_advice</span></code></a> says when.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="artful.shot_schedule.RiskFlag.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#artful.shot_schedule.RiskFlag.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="artful.shot_schedule.RiskSeverity">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">RiskSeverity</span></span><a class="headerlink" href="#artful.shot_schedule.RiskSeverity" title="Link to this definition"></a></dt>
+<dd><p>Matches the reelee shot advisor’s <code class="docutils literal notranslate"><span class="pre">ShotWarning.severity</span></code> exactly.</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code>[‘info’, ‘warn’]</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="artful.shot_schedule.SHOT_SCHEDULE_TIER">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">SHOT_SCHEDULE_TIER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'shot-schedule'</span></span><a class="headerlink" href="#artful.shot_schedule.SHOT_SCHEDULE_TIER" title="Link to this definition"></a></dt>
+<dd><p>Default lacing tier for persisted schedules — so several schedules over
+one asset (a draft and a revision, say) stay distinguishable by tier.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="artful.shot_schedule.ShotEntry">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">ShotEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">characters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal['ECU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'CU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'MCU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'MS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'MWS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'WS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'LS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ELS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'INSERT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'TWO_SHOT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'THREE_SHOT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'GROUP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'MASTER']</span> <span class="pre">|</span> <span class="pre">None</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal['EYE_LEVEL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'HIGH'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'LOW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'DUTCH'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'BIRDS_EYE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'WORMS_EYE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'PROFILE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'THREE_QUARTER'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'OTS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'POV']</span> <span class="pre">|</span> <span class="pre">None</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal['LOCKED'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'PAN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'TILT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'DOLLY_IN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'DOLLY_OUT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'TRUCK'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'PEDESTAL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ZOOM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'CRANE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'HANDHELD'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'WHIP_PAN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'DOLLY_ZOOM']</span> <span class="pre">|</span> <span class="pre">None</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_seconds_estimate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated[float</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~annotated_types.Ge(ge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0)]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal['estimate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'from_voiceover'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'from_clip'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'manual']</span> <span class="pre">|</span> <span class="pre">None</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_duration_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated[float</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~annotated_types.Gt(gt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0)]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_characters_in_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated[int</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~annotated_types.Ge(ge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1)]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_last_frame_anchor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_dialogue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">take_budget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated[int</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~annotated_types.Ge(ge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1)]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clump_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">risk_flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[~artful.shot_schedule.RiskFlag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#ShotEntry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.ShotEntry" title="Link to this definition"></a></dt>
+<dd><p>One row of a shot schedule: what to shoot, and what bounds it.</p>
+<p>Position in <code class="xref py py-attr docutils literal notranslate"><span class="pre">ShotScheduleBody.shots</span></code> <strong>is</strong> the shot’s order —
+there is deliberately no <code class="docutils literal notranslate"><span class="pre">order</span></code> field to disagree with it.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="artful.shot_schedule.ShotEntry.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#artful.shot_schedule.ShotEntry.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="artful.shot_schedule.ShotScheduleBody">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">ShotScheduleBody</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">advised_for_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'16:9'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[~artful.shot_schedule.ShotEntry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">risk_flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[~artful.shot_schedule.RiskFlag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#ShotScheduleBody"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.ShotScheduleBody" title="Link to this definition"></a></dt>
+<dd><p>The body of a shot-schedule annotation — the ordered shot list.</p>
+<p>The annotation’s <code class="docutils literal notranslate"><span class="pre">reference</span></code> carries the <code class="docutils literal notranslate"><span class="pre">asset_id</span></code> this schedule
+plans, so it is not duplicated here (same split as
+<a class="reference internal" href="../artful.html#artful.PanelBody" title="artful.PanelBody"><code class="xref py py-class docutils literal notranslate"><span class="pre">artful.PanelBody</span></code></a>).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="artful.shot_schedule.ShotScheduleBody.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#artful.shot_schedule.ShotScheduleBody.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="artful.shot_schedule.ShotScheduleBody.needs_advice">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">needs_advice</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#artful.shot_schedule.ShotScheduleBody.needs_advice" title="Link to this definition"></a></dt>
+<dd><p>True when the risk flags do not (or no longer) match <code class="docutils literal notranslate"><span class="pre">model_id</span></code>.</p>
+<p>A schedule with no <code class="docutils literal notranslate"><span class="pre">model_id</span></code> cannot be advised, so it never
+<em>needs</em> advice; one whose model changed since it was advised always
+does.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="artful.shot_schedule.ShotScheduleBody.shot">
+<span class="sig-name descname"><span class="pre">shot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shot_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#artful.shot_schedule.ShotEntry" title="artful.shot_schedule.ShotEntry"><span class="pre">ShotEntry</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#ShotScheduleBody.shot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.ShotScheduleBody.shot" title="Link to this definition"></a></dt>
+<dd><p>The entry with <code class="docutils literal notranslate"><span class="pre">shot_id</span></code>, or None. Mirrors <code class="docutils literal notranslate"><span class="pre">Storyboard.panel</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.shot_schedule.load_shot_schedule">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">load_shot_schedule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IntervalAnnotationStore</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'shot-schedule'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody" title="artful.shot_schedule.ShotScheduleBody"><span class="pre">ShotScheduleBody</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#load_shot_schedule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.load_shot_schedule" title="Link to this definition"></a></dt>
+<dd><p>One schedule, or None when there is no match.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">schedule_id</span></code> given, returns that schedule. Without it, returns
+the first schedule found for <code class="docutils literal notranslate"><span class="pre">asset_id</span></code> / <code class="docutils literal notranslate"><span class="pre">tier</span></code> — convenient for
+the common one-schedule-per-asset case.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.shot_schedule.load_shot_schedules">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">load_shot_schedules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IntervalAnnotationStore</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'shot-schedule'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody" title="artful.shot_schedule.ShotScheduleBody"><span class="pre">ShotScheduleBody</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#load_shot_schedules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.load_shot_schedules" title="Link to this definition"></a></dt>
+<dd><p>Every schedule in <code class="docutils literal notranslate"><span class="pre">store</span></code> for <code class="docutils literal notranslate"><span class="pre">asset_id</span></code> / <code class="docutils literal notranslate"><span class="pre">tier</span></code>, in store order.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.shot_schedule.new_schedule_id">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">new_schedule_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sch'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#new_schedule_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.new_schedule_id" title="Link to this definition"></a></dt>
+<dd><p>Generate a fresh short schedule id (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;sch3f7c1&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.shot_schedule.new_shot_id">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">new_shot_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sh'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#new_shot_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.new_shot_id" title="Link to this definition"></a></dt>
+<dd><p>Generate a fresh short shot id (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;sh3f7c1&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="artful.shot_schedule.save_shot_schedule">
+<span class="sig-prename descclassname"><span class="pre">artful.shot_schedule.</span></span><span class="sig-name descname"><span class="pre">save_shot_schedule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody" title="artful.shot_schedule.ShotScheduleBody"><span class="pre">ShotScheduleBody</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IntervalAnnotationStore</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'shot-schedule'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_generated_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'agent:artful'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotation</span></span></span><a class="reference internal" href="../../_modules/artful/shot_schedule.html#save_shot_schedule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#artful.shot_schedule.save_shot_schedule" title="Link to this definition"></a></dt>
+<dd><p>Persist <code class="docutils literal notranslate"><span class="pre">schedule</span></code> into <code class="docutils literal notranslate"><span class="pre">store</span></code> as one timeless annotation.</p>
+<p>Like <a class="reference internal" href="../artful.html#artful.save_storyboard" title="artful.save_storyboard"><code class="xref py py-func docutils literal notranslate"><span class="pre">artful.save_storyboard()</span></code></a> this <em>appends</em> — saving twice adds
+a second annotation rather than replacing the first, so a store can
+hold a schedule’s revision history. Use <code class="docutils literal notranslate"><span class="pre">tier</span></code> (or <code class="docutils literal notranslate"><span class="pre">schedule_id</span></code>)
+to tell revisions apart on load.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schedule</strong> – The <a class="reference internal" href="#artful.shot_schedule.ShotScheduleBody" title="artful.shot_schedule.ShotScheduleBody"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotScheduleBody</span></code></a> to persist.</p></li>
+<li><p><strong>store</strong> – Any <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.IntervalAnnotationStore</span></code>.</p></li>
+<li><p><strong>asset_id</strong> – The asset this schedule plans (goes on the annotation’s
+<code class="docutils literal notranslate"><span class="pre">reference</span></code>, not into the body).</p></li>
+<li><p><strong>tier</strong> – Tier name for the persisted annotation.</p></li>
+<li><p><strong>was_generated_by</strong> (<em>was_attributed_to /</em>) – Provenance fields.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The persisted <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Annotation</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="schema.html" class="btn btn-neutral float-left" title="artful.schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="store.html" class="btn btn-neutral float-right" title="artful.store" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

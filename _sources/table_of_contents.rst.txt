@@ -5,4 +5,5 @@
    module_docs/artful
    module_docs/artful/exports
    module_docs/artful/schema
+   module_docs/artful/shot_schedule
    module_docs/artful/store

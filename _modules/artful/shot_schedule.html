@@ -1,0 +1,608 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>artful.shot_schedule &mdash; artful 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            artful
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful.html">artful</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/exports.html">artful.exports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/schema.html">artful.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/shot_schedule.html">artful.shot_schedule</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/artful/store.html">artful.store</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">artful</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">artful.shot_schedule</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for artful.shot_schedule</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Shot schedule — an ordered, model-constraint-aware shot list.</span>
+
+<span class="sd">A *shot schedule* is the planning document that sits between a scene</span>
+<span class="sd">breakdown and a storyboard: an ordered list of shots, each carrying the</span>
+<span class="sd">constraints a downstream planner must respect (clip-length cap, how many</span>
+<span class="sd">characters may share the frame, aspect / resolution, how many takes the</span>
+<span class="sd">shot is allowed to burn) plus the advisory *risk flags* raised when those</span>
+<span class="sd">constraints collide with the chosen video model&#39;s real limits.</span>
+
+<span class="sd">Persisted as a **single** :class:`lacing.Annotation` with body schema</span>
+<span class="sd">``annot://schema/shot-schedule/v1``. One annotation, not one per shot,</span>
+<span class="sd">because a schedule exists *before* times are pinned — the ordering is the</span>
+<span class="sd">tuple order of :attr:`ShotScheduleBody.shots`, not an interval sort.</span>
+
+<span class="sd">Three sources of truth, deliberately kept apart</span>
+<span class="sd">-----------------------------------------------</span>
+
+<span class="sd">============================  =========================================</span>
+<span class="sd">what                          who owns it</span>
+<span class="sd">============================  =========================================</span>
+<span class="sd">what a *model* can do         ``falaw``&#39;s model registry</span>
+<span class="sd">                              (``max_clip_seconds``,</span>
+<span class="sd">                              ``single_character_recommended``,</span>
+<span class="sd">                              ``supported_resolutions``, …). Referenced</span>
+<span class="sd">                              here by :attr:`ShotScheduleBody.model_id`</span>
+<span class="sd">                              — **never copied**.</span>
+<span class="sd">what a *shot* requires        this schema (``max_duration_seconds``,</span>
+<span class="sd">                              ``max_characters_in_frame``, ``aspect``,</span>
+<span class="sd">                              ``resolution``, ``take_budget``).</span>
+<span class="sd">what happens when they        :class:`RiskFlag` — the cached verdict of</span>
+<span class="sd">collide                       comparing the two. Computed by reelee&#39;s</span>
+<span class="sd">                              shot advisor; stamped with</span>
+<span class="sd">                              :attr:`ShotScheduleBody.advised_for_model_id`</span>
+<span class="sd">                              so a model change makes the flags visibly</span>
+<span class="sd">                              stale (:attr:`ShotScheduleBody.needs_advice`).</span>
+<span class="sd">============================  =========================================</span>
+
+<span class="sd">Vocabulary is shared, not re-invented: shot grammar (``shot_size`` /</span>
+<span class="sd">``angle`` / ``movement``) reuses the controlled taxonomies defined in</span>
+<span class="sd">:mod:`artful.schema`; ``duration_seconds_estimate`` / ``duration_source``</span>
+<span class="sd">reuse the names already on :class:`artful.PanelBody`; characters are named</span>
+<span class="sd">by their ``character-ref`` name (the schema for ``character-ref/v1`` lives</span>
+<span class="sd">in ``nw``), matching :attr:`artful.PanelBody.moment_focal_character_ref`;</span>
+<span class="sd">and :attr:`RiskFlag.gotcha_id` points into reelee&#39;s tool-gotchas registry</span>
+<span class="sd">rather than restating the mitigation prose here.</span>
+
+<span class="sd">Plan vs realization: when a shot entry names a ``panel_id`` / ``shot_id``,</span>
+<span class="sd">those annotations are authoritative for the *realized* shot. The grammar</span>
+<span class="sd">fields here are the *planned* values — what the schedule intends before a</span>
+<span class="sd">panel exists.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Annotation</span><span class="p">,</span>
+    <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="n">MediaRef</span><span class="p">,</span>
+    <span class="n">TimeInterval</span><span class="p">,</span>
+    <span class="n">register_body_schema</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">Angle</span><span class="p">,</span> <span class="n">DurationSource</span><span class="p">,</span> <span class="n">Movement</span><span class="p">,</span> <span class="n">ShotSize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.store</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_prov</span>
+
+
+<span class="c1"># Body-schema URI for shot schedules. Versioned (v1).</span>
+<span class="n">SHOT_SCHEDULE_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/shot-schedule/v1&quot;</span>
+
+<span class="n">SHOT_SCHEDULE_TIER</span> <span class="o">=</span> <span class="s2">&quot;shot-schedule&quot;</span>
+<span class="sd">&quot;&quot;&quot;Default lacing tier for persisted schedules — so several schedules over</span>
+<span class="sd">one asset (a draft and a revision, say) stay distinguishable by tier.&quot;&quot;&quot;</span>
+
+
+<span class="n">RiskCode</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;over_clip_cap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;multi_character&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;first_last_frame&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dialogue_plus_action&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;over_take_budget&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unsupported_resolution&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mixed_aspect_ratios&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Controlled vocabulary of advisory flags a shot advisor may raise.</span>
+
+<span class="sd">``over_clip_cap`` and ``multi_character`` are **the same strings** the</span>
+<span class="sd">reelee shot advisor already emits as ``ShotWarning.code``; do not rename</span>
+<span class="sd">them — one code vocabulary across the federation, not two. The rest name</span>
+<span class="sd">pitfalls that are already curated entries in reelee&#39;s tool-gotchas</span>
+<span class="sd">registry (``seedance-first-last-frame-contortion``,</span>
+<span class="sd">``seedance-dialogue-plus-action-degrades``, ``regen-full-price``,</span>
+<span class="sd">``resolution-cost-tradeoff``, ``aspect-ratio-crop-surprise``).</span>
+
+<span class="sd">Closed vocabulary, per artful convention: adding a code is an additive</span>
+<span class="sd">schema change, made deliberately.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="n">RiskSeverity</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="s2">&quot;warn&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Matches the reelee shot advisor&#39;s ``ShotWarning.severity`` exactly.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="RiskFlag">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.RiskFlag">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RiskFlag</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One advisory warning attached to a shot (or to the whole schedule).</span>
+
+<span class="sd">    A *cached verdict*, not a constraint: it records that this shot&#39;s</span>
+<span class="sd">    requirements collided with the limits of the model named by</span>
+<span class="sd">    :attr:`ShotScheduleBody.advised_for_model_id`. Re-advise after</span>
+<span class="sd">    changing the model — :attr:`ShotScheduleBody.needs_advice` says when.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">code</span><span class="p">:</span> <span class="n">RiskCode</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Controlled advisory code.&quot;</span><span class="p">)</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Human-readable explanation, as the advisor worded it.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">severity</span><span class="p">:</span> <span class="n">RiskSeverity</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;warn&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;&quot;warn&quot; (act on it) or &quot;info&quot; (be aware).&#39;</span>
+    <span class="p">)</span>
+    <span class="n">gotcha_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Id of the entry in reelee&#39;s tool-gotchas registry that explains &quot;</span>
+            <span class="s2">&quot;this pitfall (e.g. &#39;seedance-clip-length-cap&#39;). Referenced by &quot;</span>
+            <span class="s2">&quot;id so the mitigation prose has exactly one home.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ShotEntry">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.ShotEntry">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShotEntry</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One row of a shot schedule: what to shoot, and what bounds it.</span>
+
+<span class="sd">    Position in :attr:`ShotScheduleBody.shots` **is** the shot&#39;s order —</span>
+<span class="sd">    there is deliberately no ``order`` field to disagree with it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Stable id within the schedule (e.g. &#39;sh-014&#39;). When a &quot;</span>
+            <span class="s2">&quot;``shot/v1`` annotation exists for this shot, use its &quot;</span>
+            <span class="s2">&quot;``shot_id`` so the two line up.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">panel_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Optional pointer to the storyboard panel realizing this shot &quot;</span>
+            <span class="s2">&quot;(``PanelBody.panel_id``). When set, the panel is authoritative &quot;</span>
+            <span class="s2">&quot;for the realized grammar; the fields below are the plan.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">beat_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional parent beat id (``beat/v1``).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-text directorial description of this shot.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">characters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Names of the character-refs in frame (``character-ref/v1`` &quot;</span>
+            <span class="s2">&quot;``name``), matching PanelBody.moment_focal_character_ref&#39;s &quot;</span>
+            <span class="s2">&quot;convention of naming rather than embedding. The character &quot;</span>
+            <span class="s2">&quot;*count* an advisor checks is ``len(characters)`` — there is no &quot;</span>
+            <span class="s2">&quot;separate count field to drift from it.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- planned shot grammar (controlled vocabulary, shared with PanelBody)</span>
+    <span class="n">shot_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ShotSize</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Planned shot-size taxonomy value (spec §6.3).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Angle</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Planned angle taxonomy value (spec §6.3).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">movement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Movement</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Planned camera-movement taxonomy value (spec §6.3).&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- planned duration (same field names as PanelBody) ------------------</span>
+    <span class="n">duration_seconds_estimate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Estimated shot duration in seconds. Same name and meaning as &quot;</span>
+            <span class="s2">&quot;``PanelBody.duration_seconds_estimate`` — float here is &quot;</span>
+            <span class="s2">&quot;intentional; RationalTime is materialized only once the shot &quot;</span>
+            <span class="s2">&quot;commits to a timeline.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">duration_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DurationSource</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Where the duration estimate came from.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- constraints a downstream planner must respect ---------------------</span>
+    <span class="n">max_duration_seconds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Hard upper bound for this shot, in seconds. Distinct from the &quot;</span>
+            <span class="s2">&quot;estimate: the estimate is what we think it will be, this is &quot;</span>
+            <span class="s2">&quot;what it may not exceed. Typically tightened below the model&#39;s &quot;</span>
+            <span class="s2">&quot;``max_clip_seconds`` for complex shots (dialogue + action + &quot;</span>
+            <span class="s2">&quot;more than one character degrade before the nominal cap).&quot;</span>
+        <span class="p">),</span>
+        <span class="n">gt</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">max_characters_in_frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Hard upper bound on characters sharing the frame. Set to 1 to &quot;</span>
+            <span class="s2">&quot;enforce the single-character rule on a model that needs it &quot;</span>
+            <span class="s2">&quot;(gotcha &#39;single-character-per-frame&#39;); the fix is &quot;</span>
+            <span class="s2">&quot;shot/reverse-shot, not a bigger number.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">aspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Per-shot aspect override (&quot;16:9&quot; | &quot;9:16&quot; | &quot;1:1&quot; | …). None &#39;</span>
+            <span class="s2">&quot;inherits ``ShotScheduleBody.aspect``. Explicit per generation, &quot;</span>
+            <span class="s2">&quot;because relying on a platform default is what crops the &quot;</span>
+            <span class="s2">&quot;subject out of frame (gotcha &#39;aspect-ratio-crop-surprise&#39;).&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Per-shot resolution override (&quot;720p&quot; | &quot;1080p&quot; | …), which must &#39;</span>
+            <span class="s2">&quot;be one of the target model&#39;s ``supported_resolutions`` — that &quot;</span>
+            <span class="s2">&quot;list lives in falaw and is not copied here. None inherits &quot;</span>
+            <span class="s2">&quot;``ShotScheduleBody.resolution``.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">allow_last_frame_anchor</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Whether this shot may anchor BOTH a first and a last frame. &quot;</span>
+            <span class="s2">&quot;Defaults to False because anchoring both contorts the subject &quot;</span>
+            <span class="s2">&quot;mid-clip (gotcha &#39;seedance-first-last-frame-contortion&#39;); opt &quot;</span>
+            <span class="s2">&quot;in only for hard continuity cuts where the pose barely moves.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">has_dialogue</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether a character speaks on-camera in this shot.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">has_action</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether significant physical action occurs in this shot.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">take_budget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Maximum generation attempts this shot is allowed to spend. &quot;</span>
+            <span class="s2">&quot;A regeneration costs full price, so the budget is a planning &quot;</span>
+            <span class="s2">&quot;constraint, not a hint (gotcha &#39;regen-full-price&#39;). None means &quot;</span>
+            <span class="s2">&quot;unbounded — which is a decision, so state it deliberately. &quot;</span>
+            <span class="s2">&quot;Takes actually consumed are counted from render annotations; &quot;</span>
+            <span class="s2">&quot;this body stays a plan, not a ledger.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">clump_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Optional grouping key for shots that batch well together &quot;</span>
+            <span class="s2">&quot;(same model, setting, or character), so a user can fire one &quot;</span>
+            <span class="s2">&quot;clump and keep working while it renders. Free-form; the &quot;</span>
+            <span class="s2">&quot;schedule does not enforce clump membership.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">risk_flags</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">RiskFlag</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Advisory flags raised for this shot. See RiskFlag.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-text planning notes.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ShotScheduleBody">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.ShotScheduleBody">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShotScheduleBody</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The body of a shot-schedule annotation — the ordered shot list.</span>
+
+<span class="sd">    The annotation&#39;s ``reference`` carries the ``asset_id`` this schedule</span>
+<span class="sd">    plans, so it is not duplicated here (same split as</span>
+<span class="sd">    :class:`artful.PanelBody`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">schedule_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stable id within the project (e.g. &#39;sch-001&#39;).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Human-readable name for this schedule.&quot;</span><span class="p">)</span>
+    <span class="n">model_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The video model this schedule is planned against, as a falaw &quot;</span>
+            <span class="s2">&quot;model id or alias. A *reference*: every limit value &quot;</span>
+            <span class="s2">&quot;(``max_clip_seconds``, ``single_character_recommended``, &quot;</span>
+            <span class="s2">&quot;``supported_resolutions``, …) is looked up in falaw&#39;s registry, &quot;</span>
+            <span class="s2">&quot;never copied into this body, so a registry correction cannot &quot;</span>
+            <span class="s2">&quot;leave a stale duplicate behind.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">advised_for_model_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The model id the current ``risk_flags`` were computed against. &quot;</span>
+            <span class="s2">&quot;When it differs from ``model_id`` the flags are stale — see &quot;</span>
+            <span class="s2">&quot;``needs_advice``.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">aspect</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;16:9&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Schedule-wide aspect ratio (&quot;16:9&quot; | &quot;9:16&quot; | &quot;1:1&quot; | …). &#39;</span>
+            <span class="s2">&quot;Individual shots may override it via ``ShotEntry.aspect``.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Schedule-wide default resolution, overridable per shot. None &quot;</span>
+            <span class="s2">&quot;leaves the choice to the renderer.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">shots</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ShotEntry</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The shots, in shooting order. Tuple order is the order.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">risk_flags</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">RiskFlag</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Schedule-wide advisory flags — the ones that are a property of &quot;</span>
+            <span class="s2">&quot;the list rather than of any single shot (e.g. &quot;</span>
+            <span class="s2">&quot;``mixed_aspect_ratios``).&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-text planning notes.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ShotScheduleBody.shot">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.ShotScheduleBody.shot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ShotEntry</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The entry with ``shot_id``, or None. Mirrors ``Storyboard.panel``.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">shot_id</span> <span class="o">==</span> <span class="n">shot_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">needs_advice</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;True when the risk flags do not (or no longer) match ``model_id``.</span>
+
+<span class="sd">        A schedule with no ``model_id`` cannot be advised, so it never</span>
+<span class="sd">        *needs* advice; one whose model changed since it was advised always</span>
+<span class="sd">        does.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">advised_for_model_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_id</span></div>
+
+
+
+<div class="viewcode-block" id="new_shot_id">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.new_shot_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">new_shot_id</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sh&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a fresh short shot id (e.g. ``&quot;sh3f7c1&quot;``).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="new_schedule_id">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.new_schedule_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">new_schedule_id</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sch&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a fresh short schedule id (e.g. ``&quot;sch3f7c1&quot;``).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Store round-trip</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="save_shot_schedule">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.save_shot_schedule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_shot_schedule</span><span class="p">(</span>
+    <span class="n">schedule</span><span class="p">:</span> <span class="n">ShotScheduleBody</span><span class="p">,</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SHOT_SCHEDULE_TIER</span><span class="p">,</span>
+    <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:unknown&quot;</span><span class="p">,</span>
+    <span class="n">was_generated_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent:artful&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Annotation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Persist ``schedule`` into ``store`` as one timeless annotation.</span>
+
+<span class="sd">    Like :func:`artful.save_storyboard` this *appends* — saving twice adds</span>
+<span class="sd">    a second annotation rather than replacing the first, so a store can</span>
+<span class="sd">    hold a schedule&#39;s revision history. Use ``tier`` (or ``schedule_id``)</span>
+<span class="sd">    to tell revisions apart on load.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        schedule: The :class:`ShotScheduleBody` to persist.</span>
+<span class="sd">        store: Any :class:`lacing.IntervalAnnotationStore`.</span>
+<span class="sd">        asset_id: The asset this schedule plans (goes on the annotation&#39;s</span>
+<span class="sd">            ``reference``, not into the body).</span>
+<span class="sd">        tier: Tier name for the persisted annotation.</span>
+<span class="sd">        was_attributed_to / was_generated_by: Provenance fields.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The persisted :class:`lacing.Annotation`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+        <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">,</span>
+        <span class="c1"># A schedule spans no interval — it is the plan that decides the</span>
+        <span class="c1"># intervals. Zero-duration placeholder, same as the storyboard-meta</span>
+        <span class="c1"># record in artful.store.</span>
+        <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+        <span class="n">body</span><span class="o">=</span><span class="n">schedule</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+        <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">SHOT_SCHEDULE_BODY_SCHEMA_URI</span><span class="p">,</span>
+        <span class="n">provenance</span><span class="o">=</span><span class="n">make_prov</span><span class="p">(</span><span class="n">was_generated_by</span><span class="p">,</span> <span class="n">was_attributed_to</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ann</span></div>
+
+
+
+<div class="viewcode-block" id="load_shot_schedules">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.load_shot_schedules">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_shot_schedules</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SHOT_SCHEDULE_TIER</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ShotScheduleBody</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Every schedule in ``store`` for ``asset_id`` / ``tier``, in store order.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_iter_schedules</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="load_shot_schedule">
+<a class="viewcode-back" href="../../module_docs/artful/shot_schedule.html#artful.load_shot_schedule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_shot_schedule</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">schedule_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SHOT_SCHEDULE_TIER</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ShotScheduleBody</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One schedule, or None when there is no match.</span>
+
+<span class="sd">    With ``schedule_id`` given, returns that schedule. Without it, returns</span>
+<span class="sd">    the first schedule found for ``asset_id`` / ``tier`` — convenient for</span>
+<span class="sd">    the common one-schedule-per-asset case.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">sched</span> <span class="ow">in</span> <span class="n">_iter_schedules</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">schedule_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sched</span><span class="o">.</span><span class="n">schedule_id</span> <span class="o">==</span> <span class="n">schedule_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sched</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_iter_schedules</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ShotScheduleBody</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">!=</span> <span class="n">tier</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">SHOT_SCHEDULE_BODY_SCHEMA_URI</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span> <span class="n">MediaRef</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">asset_id</span> <span class="o">!=</span> <span class="n">asset_id</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">yield</span> <span class="n">ShotScheduleBody</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+
+
+<span class="c1"># --- lacing body-schema registration ---------------------------------------</span>
+
+<span class="n">register_body_schema</span><span class="p">(</span><span class="n">SHOT_SCHEDULE_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">ShotScheduleBody</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

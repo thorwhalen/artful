@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to artful’s documentation! &mdash; artful 0.0.7 documentation</title>
+  <title>Welcome to artful’s documentation! &mdash; artful 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="_static/documentation_options.js?v=53b53b71"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/artful.html">artful</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/artful/exports.html">artful.exports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/artful/schema.html">artful.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/artful/shot_schedule.html">artful.shot_schedule</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/artful/store.html">artful.store</a></li>
 </ul>
 
@@ -87,12 +88,20 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.ModelSheet"><code class="docutils literal notranslate"><span class="pre">ModelSheet</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.PanelBody"><code class="docutils literal notranslate"><span class="pre">PanelBody</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.PanelImage"><code class="docutils literal notranslate"><span class="pre">PanelImage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.RiskFlag"><code class="docutils literal notranslate"><span class="pre">RiskFlag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.ShotEntry"><code class="docutils literal notranslate"><span class="pre">ShotEntry</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.ShotScheduleBody"><code class="docutils literal notranslate"><span class="pre">ShotScheduleBody</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.Storyboard"><code class="docutils literal notranslate"><span class="pre">Storyboard</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.StoryboardMetaBody"><code class="docutils literal notranslate"><span class="pre">StoryboardMetaBody</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.from_markdown"><code class="docutils literal notranslate"><span class="pre">from_markdown()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.load_shot_schedule"><code class="docutils literal notranslate"><span class="pre">load_shot_schedule()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.load_shot_schedules"><code class="docutils literal notranslate"><span class="pre">load_shot_schedules()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.load_storyboard"><code class="docutils literal notranslate"><span class="pre">load_storyboard()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.new_panel_id"><code class="docutils literal notranslate"><span class="pre">new_panel_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.new_schedule_id"><code class="docutils literal notranslate"><span class="pre">new_schedule_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.new_shot_id"><code class="docutils literal notranslate"><span class="pre">new_shot_id()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.panel_intervals_from_panels"><code class="docutils literal notranslate"><span class="pre">panel_intervals_from_panels()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.save_shot_schedule"><code class="docutils literal notranslate"><span class="pre">save_shot_schedule()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.to_html"><code class="docutils literal notranslate"><span class="pre">to_html()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful.html#artful.to_markdown"><code class="docutils literal notranslate"><span class="pre">to_markdown()</span></code></a></li>
@@ -119,9 +128,25 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful/schema.html#artful.schema.new_panel_id"><code class="docutils literal notranslate"><span class="pre">new_panel_id()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/artful/shot_schedule.html">artful.shot_schedule</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#three-sources-of-truth-deliberately-kept-apart">Three sources of truth, deliberately kept apart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.RiskCode"><code class="docutils literal notranslate"><span class="pre">RiskCode</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.RiskFlag"><code class="docutils literal notranslate"><span class="pre">RiskFlag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.RiskSeverity"><code class="docutils literal notranslate"><span class="pre">RiskSeverity</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.SHOT_SCHEDULE_TIER"><code class="docutils literal notranslate"><span class="pre">SHOT_SCHEDULE_TIER</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.ShotEntry"><code class="docutils literal notranslate"><span class="pre">ShotEntry</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.ShotScheduleBody"><code class="docutils literal notranslate"><span class="pre">ShotScheduleBody</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.load_shot_schedule"><code class="docutils literal notranslate"><span class="pre">load_shot_schedule()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.load_shot_schedules"><code class="docutils literal notranslate"><span class="pre">load_shot_schedules()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.new_schedule_id"><code class="docutils literal notranslate"><span class="pre">new_schedule_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.new_shot_id"><code class="docutils literal notranslate"><span class="pre">new_shot_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/shot_schedule.html#artful.shot_schedule.save_shot_schedule"><code class="docutils literal notranslate"><span class="pre">save_shot_schedule()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/artful/store.html">artful.store</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful/store.html#artful.store.StoryboardMetaBody"><code class="docutils literal notranslate"><span class="pre">StoryboardMetaBody</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful/store.html#artful.store.load_storyboard"><code class="docutils literal notranslate"><span class="pre">load_storyboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/artful/store.html#artful.store.make_prov"><code class="docutils literal notranslate"><span class="pre">make_prov()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful/store.html#artful.store.panel_intervals_from_panels"><code class="docutils literal notranslate"><span class="pre">panel_intervals_from_panels()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/artful/store.html#artful.store.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
 </ul>
@@ -136,8 +161,8 @@
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-<p>Release: 0.0.7</p>
-<p>Last change: Jun 20, 2026</p>
+<p>Release: 0.0.8</p>
+<p>Last change: Aug 05, 2026</p>
 </section>
 
 

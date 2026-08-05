@@ -1,0 +1,4 @@
+artful.shot_schedule
+====================
+.. automodule:: artful.shot_schedule
+   :members:
