@@ -9,7 +9,9 @@ description: >
   "save storyboard", "load storyboard", "contact sheet", "shot list as
   panels", "render storyboard images", and on any task that involves
   constructing or round-tripping a Storyboard through a lacing store.
-  For Markdown round-trip with LLMs, see the `artful-markdown` skill.
+  For Markdown round-trip with LLMs, see the `artful-markdown` skill; for
+  the ordered, model-constraint-aware shot list that precedes the panels,
+  see the `artful-shot-schedule` skill.
 ---
 
 # artful — Storyboards on a Timeline
@@ -172,6 +174,7 @@ pointing at `path` / `url`. Special characters are escaped.
 
 | Task | Use |
 |------|-----|
+| Plan shots *before* panels exist, against a video model's limits | `ShotScheduleBody` (see the `artful-shot-schedule` skill) |
 | Author panels in code or from a pipeline | Build `Storyboard` directly |
 | Hand-edit or LLM-edit panels as text | `to_markdown` / `from_markdown` (see the `artful-markdown` skill) |
 | Persist for later, share across machines | `save_storyboard` into a lacing store |
