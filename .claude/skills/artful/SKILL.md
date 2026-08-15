@@ -34,10 +34,18 @@ from artful import Storyboard, PanelBody, PanelImage
 |-------|-----------------|
 | `Storyboard` | `title`, `asset_id` (the timeline asset), `panels`, `style`, `aspect` |
 | `PanelBody` | `panel_id`, optional `shot_id`, `images`, `caption`, `framing`, `camera`, `transition_in`, `notes` |
-| `PanelImage` | One of `artifact_id` / `url` / `path`, plus `role` (`thumbnail` \| `seed` \| `reference` \| `alternate`) and `caption` |
+| `PanelImage` | One of `artifact_id` / `url` / `path`, plus `role` (a free string — by convention `thumbnail` / `seed` / `reference` / `alternate`, not validated) and `caption` |
 
-All three are **frozen** Pydantic models (`extra="forbid"`). Build new
-versions with `model_copy(update={...})` rather than mutating.
+The table lists the core fields. `PanelBody` also carries review / alternate
+state (`review_status`, `active_image_index`) and the additive
+narrative-to-storyboard fields (`moment_*`, `split_*`, the controlled
+`shot_size` / `angle` / `movement`, and `duration_*`) — `artful/schema.py` has
+the full list with per-field docs.
+
+All three set `extra="forbid"`. The two *body* models — `PanelBody` and
+`PanelImage` — are also **frozen**: build new versions with
+`model_copy(update={...})` rather than mutating. `Storyboard` is a plain
+in-memory view and is mutable.
 
 Important: `PanelBody` itself does **not** carry the interval. The interval
 lives on the lacing annotation's `reference` and is supplied separately at

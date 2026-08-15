@@ -132,9 +132,11 @@ to review.
 |------|------------|
 | `Storyboard` | Title, `asset_id` (the timeline), panels, style hint, aspect ratio. |
 | `PanelBody` | One panel: `panel_id`, optional `shot_id`, images, caption, framing, camera, `transition_in`, notes. The interval lives on the lacing annotation's reference, not in the body. |
-| `PanelImage` | One image for a panel — `artifact_id` (sha-256 lacing artifact ref), `url`, or `path`, plus a `role` (`thumbnail` \| `seed` \| `reference` \| `alternate`) and caption. |
+| `PanelImage` | One image for a panel — `artifact_id` (sha-256 lacing artifact ref), `url`, or `path`, plus a `role` — a free string, by convention `thumbnail` / `seed` / `reference` / `alternate`, not validated — and caption. |
 
-All three are frozen Pydantic models with `extra="forbid"`. Importing
+All three forbid unknown fields (`extra="forbid"`); the two *body* models —
+`PanelBody` and `PanelImage` — are also frozen, so build new versions with
+`model_copy(update={...})`. Importing
 `artful` registers `PanelBody` against lacing under the body-schema URI
 `annot://schema/storyboard-panel/v1`, so `lacing.validate_body(...)` works
 out of the box.
