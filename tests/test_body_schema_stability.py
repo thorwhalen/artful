@@ -21,6 +21,7 @@ Breaking and additive changes fail in different tests, with different advice:
 
 - :func:`test_pinned_fields_are_unchanged` fires on a rename, a removal, a
   type change, a constraint change, or a default change — all breaking.
+  Reordering field declarations is not one: key order never reaches the wire.
 - :func:`test_new_fields_are_additive_and_pinned` fires on a field that
   exists but isn't pinned, and tells you whether it is additive (optional,
   with a default) or breaking (required).
@@ -150,9 +151,13 @@ MODEL_SHEET_VIEW = (
 #: Model name → its pinned ``required`` field names and per-field shapes.
 #: Nested models (``PanelImage``, ``ShotEntry``, ``RiskFlag``) are pinned too:
 #: they serialize *inside* a body, so their fields are equally on the wire.
+#: ``required`` is a *set*, for the same reason enum members are sorted: JSON
+#: object key order is not part of the contract, so moving a field declaration
+#: is invisible on the wire and must not fire the federation alarm. Adding,
+#: dropping or renaming a required name still does.
 PINNED: dict[str, dict] = {
     "PanelBody": {
-        "required": ("panel_id",),
+        "required": frozenset({"panel_id"}),
         "fields": {
             "panel_id": "string",
             "shot_id": "string|null = null",
@@ -182,7 +187,7 @@ PINNED: dict[str, dict] = {
         },
     },
     "PanelImage": {
-        "required": (),
+        "required": frozenset(),
         "fields": {
             "artifact_id": "string|null = null",
             "url": "string|null = null",
@@ -192,7 +197,7 @@ PINNED: dict[str, dict] = {
         },
     },
     "StoryboardMetaBody": {
-        "required": (),
+        "required": frozenset(),
         "fields": {
             "title": 'string = ""',
             "style": 'string = ""',
@@ -200,7 +205,7 @@ PINNED: dict[str, dict] = {
         },
     },
     "ModelSheet": {
-        "required": ("character_ref_id", "sheet_id"),
+        "required": frozenset({"character_ref_id", "sheet_id"}),
         "fields": {
             "character_ref_id": "string",
             "sheet_id": "string",
@@ -217,7 +222,7 @@ PINNED: dict[str, dict] = {
         },
     },
     "ShotScheduleBody": {
-        "required": ("schedule_id",),
+        "required": frozenset({"schedule_id"}),
         "fields": {
             "schedule_id": "string",
             "title": 'string = ""',
@@ -231,7 +236,7 @@ PINNED: dict[str, dict] = {
         },
     },
     "ShotEntry": {
-        "required": ("shot_id",),
+        "required": frozenset({"shot_id"}),
         "fields": {
             "shot_id": "string",
             "panel_id": "string|null = null",
@@ -257,7 +262,7 @@ PINNED: dict[str, dict] = {
         },
     },
     "RiskFlag": {
-        "required": ("code",),
+        "required": frozenset({"code"}),
         "fields": {
             "code": RISK_CODE,
             "message": 'string = ""',
@@ -328,8 +333,8 @@ PROSE_KEYS = frozenset({"title", "description"})
 
 
 def _actual_shapes() -> dict[str, dict]:
-    """``{model name: {"required": (...), "fields": {name: shape}}}`` for the
-    four owned bodies plus every model nested inside one of them."""
+    """``{model name: {"required": frozenset(...), "fields": {name: shape}}}``
+    for the four owned bodies plus every model nested inside one of them."""
     out: dict[str, dict] = {}
     for model in OWNED.values():
         js = model.model_json_schema()
@@ -340,8 +345,10 @@ def _actual_shapes() -> dict[str, dict]:
 
 
 def _entry(js: dict) -> dict:
+    # ``required`` is a set, not the declaration-ordered list pydantic emits:
+    # key order does not reach the wire, so reordering fields is not a change.
     return {
-        "required": tuple(js.get("required", ())),
+        "required": frozenset(js.get("required", ())),
         "fields": {name: _shape(prop) for name, prop in js["properties"].items()},
     }
 

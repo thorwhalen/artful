@@ -34,7 +34,7 @@ from artful import Storyboard, PanelBody, PanelImage
 |-------|-----------------|
 | `Storyboard` | `title`, `asset_id` (the timeline asset), `panels`, `style`, `aspect` |
 | `PanelBody` | `panel_id`, optional `shot_id`, `images`, `caption`, `framing`, `camera`, `transition_in`, `notes` |
-| `PanelImage` | One of `artifact_id` / `url` / `path`, plus `role` (`thumbnail` \| `seed` \| `reference` \| `alternate`) and `caption` |
+| `PanelImage` | One of `artifact_id` / `url` / `path`, plus `role` (a free string — by convention `thumbnail` / `seed` / `reference` / `alternate`, not validated) and `caption` |
 
 The table lists the core fields. `PanelBody` also carries review / alternate
 state (`review_status`, `active_image_index`) and the additive

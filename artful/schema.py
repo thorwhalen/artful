@@ -157,7 +157,8 @@ class PanelImage(BaseModel):
     role: str = Field(
         "thumbnail",
         description=(
-            'One of: "thumbnail" (default — what to show in contact sheet), '
+            "A free string, not validated. By convention: "
+            '"thumbnail" (default — what to show in contact sheet), '
             '"seed" (image that drives the downstream renderer), '
             '"reference" (input the panel was generated from), '
             '"alternate" (variant a curator can pick from).'

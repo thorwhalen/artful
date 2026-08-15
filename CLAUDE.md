@@ -74,4 +74,4 @@ other three.
   and are referenced by `model_id`, never copied into a body.
 - artful must not import `reelee` or `nw` — the dependency runs the other way.
   Shared vocabulary is pinned by literal in tests instead.
-- `pytest` from the repo root: 75 tests, fully offline, no network, no cost.
+- `pytest` from the repo root — fully offline, no network, no cost.
