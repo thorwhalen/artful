@@ -42,6 +42,10 @@ ReviewStatus = Literal[
     "needs-revision",
     "rejected",
 ]
+"""Review status of a storyboard panel. Defaults to ``"unreviewed"``;
+the FE Kanban view + per-panel review badge consume this. v0.3
+persisted-review-status field — backward-compatible (existing dump
+files without the field get the default)."""
 
 
 MomentHeuristic = Literal[
@@ -121,10 +125,6 @@ Movement = Literal[
 DurationSource = Literal["estimate", "from_voiceover", "from_clip", "manual"]
 """Spec §7.5 — provenance of a panel's duration field. ``manual``
 indicates the user overrode the estimate."""
-"""Review status of a storyboard panel. Defaults to ``"unreviewed"``;
-the FE Kanban view + per-panel review badge consume this. v0.3
-persisted-review-status field — backward-compatible (existing dump
-files without the field get the default)."""
 
 
 # Body-schema URI for storyboard panels. Versioned (v1).
