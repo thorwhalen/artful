@@ -55,6 +55,21 @@ so it alone still has no stored data behind it. It is the one body that is
 still cheap to reshape — until reelee wires it, at which point it joins the
 other three.
 
+Its consumer is identified, though, and it is **not** the beat→panel chain:
+reelee's implementation plan deliberately collapsed the shot layer into the
+panel layer, so a shot artifact between beat and panel is a vestigial layer
+that plan rejects. The real seam is `reelee/shot_advisor.py`, which already
+ships this feature *statelessly* — anonymous dicts in, warnings out, nothing
+persisted. `shot-schedule/v1` is the persistent body for exactly that, which
+is why `ShotEntry` carries `panel_id` and `beat_id`: it **links to** panels
+rather than preceding them.
+
+**artful owns the risk-code vocabulary.** `RiskCode` and `RiskSeverity` here
+are the SSOT; reelee's advisor imports them rather than re-declaring the
+strings (agreed with the reelee side, 2026-08-15). Adding a code is an
+additive schema change made deliberately — do not let a second copy of the
+vocabulary grow in a consumer.
+
 ## Skills in this repo
 
 - **artful** — building, persisting and loading storyboards. Load when working
@@ -62,7 +77,7 @@ other three.
 - **artful-markdown** — the Markdown round-trip format. Load when an LLM or a
   human authors or edits panels as text (`to_markdown` / `from_markdown`).
 - **artful-shot-schedule** — the `shot-schedule/v1` planning body. Load when
-  planning shots against a video model's real limits, before panels exist.
+  planning a shot list against a video model's real limits.
 
 ## House rules
 
