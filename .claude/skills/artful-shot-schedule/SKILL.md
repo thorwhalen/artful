@@ -58,11 +58,13 @@ sched = ShotScheduleBody(
     shots=(
         ShotEntry(
             shot_id="sh-01",
-            panel_id="p1",              # optional link to the realizing panel
-            beat_id="b1",               # optional parent beat
+            panel_id="p1",  # optional link to the realizing panel
+            beat_id="b1",  # optional parent beat
             description="Mairead pushes the door open.",
-            characters=("Mairead",),    # character-ref *names*
-            shot_size="MS", angle="EYE_LEVEL", movement="LOCKED",
+            characters=("Mairead",),  # character-ref *names*
+            shot_size="MS",
+            angle="EYE_LEVEL",
+            movement="LOCKED",
             duration_seconds_estimate=6.0,
             duration_source="estimate",
             # --- constraints a planner must respect ---
@@ -119,10 +121,10 @@ deliberately; the defaults are the safe choice, not the permissive one.
 
 ```python
 RiskFlag(
-    code="over_clip_cap",                      # controlled vocabulary
+    code="over_clip_cap",  # controlled vocabulary
     message="~14s is over this model's ~10s clip cap.",
-    severity="warn",                           # "warn" | "info"
-    gotcha_id="seedance-clip-length-cap",      # into reelee's gotchas registry
+    severity="warn",  # "warn" | "info"
+    gotcha_id="seedance-clip-length-cap",  # into reelee's gotchas registry
 )
 ```
 
@@ -155,10 +157,12 @@ so it never *needs* advice.
 After advising, write both together:
 
 ```python
-sched = sched.model_copy(update={
-    "shots": advised_shots,
-    "advised_for_model_id": sched.model_id,
-})
+sched = sched.model_copy(
+    update={
+        "shots": advised_shots,
+        "advised_for_model_id": sched.model_id,
+    }
+)
 ```
 
 ## Vocabulary is shared, not re-invented
