@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.schema &mdash; artful 0.0.8 documentation</title>
+  <title>artful.schema &mdash; artful 0.0.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../_static/documentation_options.js?v=f7cdbf68"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -70,6 +70,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#artful.schema.PanelImage.model_config"><code class="docutils literal notranslate"><span class="pre">PanelImage.model_config</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#artful.schema.ReviewStatus"><code class="docutils literal notranslate"><span class="pre">ReviewStatus</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#artful.schema.ShotSize"><code class="docutils literal notranslate"><span class="pre">ShotSize</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#artful.schema.Storyboard"><code class="docutils literal notranslate"><span class="pre">Storyboard</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#artful.schema.Storyboard.model_config"><code class="docutils literal notranslate"><span class="pre">Storyboard.model_config</span></code></a></li>
@@ -227,6 +228,16 @@ from “this is the seed image for the renderer.”</p>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="artful.schema.ReviewStatus">
+<span class="sig-prename descclassname"><span class="pre">artful.schema.</span></span><span class="sig-name descname"><span class="pre">ReviewStatus</span></span><a class="headerlink" href="#artful.schema.ReviewStatus" title="Link to this definition"></a></dt>
+<dd><p>Review status of a storyboard panel. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;unreviewed&quot;</span></code>;
+the FE Kanban view + per-panel review badge consume this. v0.3
+persisted-review-status field — backward-compatible (existing dump
+files without the field get the default).</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code>[‘unreviewed’, ‘approved’, ‘needs-revision’, ‘rejected’]</p>
 </dd></dl>
 
 <dl class="py data">

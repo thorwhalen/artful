@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.schema &mdash; artful 0.0.8 documentation</title>
+  <title>artful.schema &mdash; artful 0.0.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../_static/documentation_options.js?v=f7cdbf68"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -122,6 +122,10 @@
     <span class="s2">&quot;needs-revision&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rejected&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;Review status of a storyboard panel. Defaults to ``&quot;unreviewed&quot;``;</span>
+<span class="sd">the FE Kanban view + per-panel review badge consume this. v0.3</span>
+<span class="sd">persisted-review-status field — backward-compatible (existing dump</span>
+<span class="sd">files without the field get the default).&quot;&quot;&quot;</span>
 
 
 <span class="n">MomentHeuristic</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
@@ -201,10 +205,6 @@
 <span class="n">DurationSource</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;estimate&quot;</span><span class="p">,</span> <span class="s2">&quot;from_voiceover&quot;</span><span class="p">,</span> <span class="s2">&quot;from_clip&quot;</span><span class="p">,</span> <span class="s2">&quot;manual&quot;</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;Spec §7.5 — provenance of a panel&#39;s duration field. ``manual``</span>
 <span class="sd">indicates the user overrode the estimate.&quot;&quot;&quot;</span>
-<span class="sd">&quot;&quot;&quot;Review status of a storyboard panel. Defaults to ``&quot;unreviewed&quot;``;</span>
-<span class="sd">the FE Kanban view + per-panel review badge consume this. v0.3</span>
-<span class="sd">persisted-review-status field — backward-compatible (existing dump</span>
-<span class="sd">files without the field get the default).&quot;&quot;&quot;</span>
 
 
 <span class="c1"># Body-schema URI for storyboard panels. Versioned (v1).</span>
@@ -239,7 +239,8 @@
     <span class="n">role</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;thumbnail&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s1">&#39;One of: &quot;thumbnail&quot; (default — what to show in contact sheet), &#39;</span>
+            <span class="s2">&quot;A free string, not validated. By convention: &quot;</span>
+            <span class="s1">&#39;&quot;thumbnail&quot; (default — what to show in contact sheet), &#39;</span>
             <span class="s1">&#39;&quot;seed&quot; (image that drives the downstream renderer), &#39;</span>
             <span class="s1">&#39;&quot;reference&quot; (input the panel was generated from), &#39;</span>
             <span class="s1">&#39;&quot;alternate&quot; (variant a curator can pick from).&#39;</span>
