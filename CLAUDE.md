@@ -1,6 +1,6 @@
 # artful — agent entry point
 
-`artful` is the **storyboard data model** of the video_gen federation: panels
+`artful` is the **storyboard data model** of the `av` federation (formerly `video_gen`): panels
 pinned to intervals of a master timeline and persisted as `lacing` annotations,
 plus two storyboard-adjacent bodies (`ModelSheet`, `ShotScheduleBody`) and the
 Markdown / HTML exporters. Five modules, no renderer, no storage of its own —
