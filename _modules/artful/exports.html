@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>artful.exports &mdash; artful 0.0.9 documentation</title>
+  <title>artful.exports &mdash; artful 0.0.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f7cdbf68"></script>
+      <script src="../../_static/documentation_options.js?v=a83ce22a"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -78,22 +78,22 @@
            <div itemprop="articleBody">
              
   <h1>Source code for artful.exports</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Storyboard exporters: Markdown ↔ HTML ↔ Storyboard.</span>
+<span></span><span class="sd">"""Storyboard exporters: Markdown ↔ HTML ↔ Storyboard.</span>
 
 <span class="sd">Three forms supported today:</span>
 
 <span class="sd">- :func:`to_markdown` / :func:`from_markdown` — round-trippable plain text</span>
 <span class="sd">  for editor-friendly hand authoring + LLM consumption. Markdown is the</span>
-<span class="sd">  canonical &quot;give an LLM a storyboard to read or write&quot; format.</span>
+<span class="sd">  canonical "give an LLM a storyboard to read or write" format.</span>
 <span class="sd">- :func:`to_html` — a self-contained HTML contact sheet for review in a</span>
-<span class="sd">  browser; embeds &lt;img&gt; tags pointing at the panels&#39; urls / paths.</span>
+<span class="sd">  browser; embeds &lt;img&gt; tags pointing at the panels' urls / paths.</span>
 
 <span class="sd">PDF export is deferred (needs reportlab; lives behind the ``[pdf]`` extra).</span>
 
 <span class="sd">Each panel renders the same fields: panel id, time interval, framing, camera,</span>
 <span class="sd">caption, image refs, notes. Round-trip-safe means: ``from_markdown(to_markdown(s))``</span>
 <span class="sd">preserves every field.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -132,74 +132,74 @@
     <span class="n">storyboard</span><span class="p">:</span> <span class="n">Storyboard</span><span class="p">,</span>
     <span class="n">panel_intervals</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render ``storyboard`` as Markdown.</span>
+<span class="w">    </span><span class="sd">"""Render ``storyboard`` as Markdown.</span>
 
-<span class="sd">    If ``panel_intervals`` is given, each panel&#39;s heading includes its</span>
+<span class="sd">    If ``panel_intervals`` is given, each panel's heading includes its</span>
 <span class="sd">    ``[start..end]s`` interval. If not, only ids are shown — useful when</span>
-<span class="sd">    the intervals haven&#39;t been pinned yet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    the intervals haven't been pinned yet.</span>
+<span class="sd">    """</span>
     <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="s2">&quot;Storyboard&quot;</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- asset_id: `</span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="s2">"Storyboard"</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"# </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- asset_id: `</span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="p">:</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- style: </span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- aspect: </span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">aspect</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- style: </span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- aspect: </span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">aspect</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">panels</span><span class="p">:</span>
-        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;## panel </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"## panel </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">panel_intervals</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span> <span class="ow">in</span> <span class="n">panel_intervals</span><span class="p">:</span>
             <span class="n">iv</span> <span class="o">=</span> <span class="n">panel_intervals</span><span class="p">[</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="p">]</span>
-            <span class="n">head</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]s&quot;</span>
+            <span class="n">head</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" [</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]s"</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- shot: `</span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- shot: `</span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span><span class="si">}</span><span class="s2">`"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- framing: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- framing: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- camera: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- camera: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="c1"># Controlled shot-grammar vocabulary (spec §6.3) — distinct from the</span>
         <span class="c1"># free-text framing/camera above.</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- shot_size: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- shot_size: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- angle: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- angle: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- movement: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">movement</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="o">!=</span> <span class="s2">&quot;cut&quot;</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- transition: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- movement: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">movement</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="o">!=</span> <span class="s2">"cut"</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- transition: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">caption</span><span class="p">:</span>
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">caption</span><span class="p">)</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">panel</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">img</span><span class="o">.</span><span class="n">path</span>
                 <span class="ow">or</span> <span class="n">img</span><span class="o">.</span><span class="n">url</span>
-                <span class="ow">or</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;artifact:</span><span class="si">{</span><span class="n">img</span><span class="o">.</span><span class="n">artifact_id</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">artifact_id</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"artifact:</span><span class="si">{</span><span class="n">img</span><span class="o">.</span><span class="n">artifact_id</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">artifact_id</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="n">cap</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">caption</span> <span class="ow">or</span> <span class="n">img</span><span class="o">.</span><span class="n">role</span>
             <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
-                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;![</span><span class="si">{</span><span class="n">cap</span><span class="si">}</span><span class="s2">](</span><span class="si">{</span><span class="n">ref</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"![</span><span class="si">{</span><span class="n">cap</span><span class="si">}</span><span class="s2">](</span><span class="si">{</span><span class="n">ref</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt; notes: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">notes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&gt; notes: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">notes</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span></div>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span></div>
 
 
 
-<span class="n">_HEADING_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^#\s+(.+)$&quot;</span><span class="p">)</span>
+<span class="n">_HEADING_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^#\s+(.+)$"</span><span class="p">)</span>
 <span class="n">_PANEL_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-    <span class="sa">r</span><span class="s2">&quot;^##\s+panel\s+(?P&lt;id&gt;\S+)(?:\s+\[(?P&lt;start&gt;[\d.]+)\.\.(?P&lt;end&gt;[\d.]+)\]s)?\s*$&quot;</span>
+    <span class="sa">r</span><span class="s2">"^##\s+panel\s+(?P&lt;id&gt;\S+)(?:\s+\[(?P&lt;start&gt;[\d.]+)\.\.(?P&lt;end&gt;[\d.]+)\]s)?\s*$"</span>
 <span class="p">)</span>
-<span class="n">_TOP_FIELD_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^-\s+(?P&lt;key&gt;[a-z_]+):\s*(?P&lt;value&gt;.*)$&quot;</span><span class="p">)</span>
-<span class="n">_IMG_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;!\[(?P&lt;cap&gt;[^\]]*)\]\((?P&lt;src&gt;[^)]+)\)&quot;</span><span class="p">)</span>
-<span class="n">_NOTES_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^&gt;\s*notes:\s*(?P&lt;text&gt;.*)$&quot;</span><span class="p">)</span>
+<span class="n">_TOP_FIELD_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^-\s+(?P&lt;key&gt;[a-z_]+):\s*(?P&lt;value&gt;.*)$"</span><span class="p">)</span>
+<span class="n">_IMG_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"!\[(?P&lt;cap&gt;[^\]]*)\]\((?P&lt;src&gt;[^)]+)\)"</span><span class="p">)</span>
+<span class="n">_NOTES_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^&gt;\s*notes:\s*(?P&lt;text&gt;.*)$"</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="from_markdown">
@@ -207,29 +207,29 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">from_markdown</span><span class="p">(</span>
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Storyboard</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse :func:`to_markdown`&#39;s output back into a Storyboard + intervals.</span>
+<span class="w">    </span><span class="sd">"""Parse :func:`to_markdown`'s output back into a Storyboard + intervals.</span>
 
-<span class="sd">    Lines that don&#39;t match a known shape are appended to the current panel&#39;s</span>
+<span class="sd">    Lines that don't match a known shape are appended to the current panel's</span>
 <span class="sd">    caption. Panels without an interval in the heading are returned with</span>
 <span class="sd">    no entry in the intervals dict (caller can pin them later).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">asset_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">style</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">aspect</span> <span class="o">=</span> <span class="s2">&quot;16:9&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">asset_id</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">style</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">aspect</span> <span class="o">=</span> <span class="s2">"16:9"</span>
     <span class="n">panels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PanelBody</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">intervals</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="n">current_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">current_shot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">current_framing</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">current_camera</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">current_framing</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">current_camera</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">current_shot_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">current_angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">current_movement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">current_transition</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>
+    <span class="n">current_transition</span> <span class="o">=</span> <span class="s2">"cut"</span>
     <span class="n">current_caption_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">current_notes</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">current_notes</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">current_images</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PanelImage</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">in_top</span> <span class="o">=</span> <span class="kc">True</span>
@@ -241,7 +241,7 @@
             <span class="n">panel_id</span><span class="o">=</span><span class="n">current_id</span><span class="p">,</span>
             <span class="n">shot_id</span><span class="o">=</span><span class="n">current_shot</span><span class="p">,</span>
             <span class="n">images</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">current_images</span><span class="p">),</span>
-            <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">current_caption_lines</span> <span class="k">if</span> <span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="n">caption</span><span class="o">=</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">current_caption_lines</span> <span class="k">if</span> <span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
             <span class="n">framing</span><span class="o">=</span><span class="n">current_framing</span><span class="p">,</span>
             <span class="n">camera</span><span class="o">=</span><span class="n">current_camera</span><span class="p">,</span>
             <span class="n">shot_size</span><span class="o">=</span><span class="n">current_shot_size</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]</span>
@@ -265,65 +265,65 @@
         <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
             <span class="n">in_top</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">_flush_panel</span><span class="p">()</span>
-            <span class="n">current_id</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+            <span class="n">current_id</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)</span>
             <span class="n">current_shot</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">current_framing</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">current_camera</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">current_framing</span> <span class="o">=</span> <span class="s2">""</span>
+            <span class="n">current_camera</span> <span class="o">=</span> <span class="s2">""</span>
             <span class="n">current_shot_size</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">current_angle</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">current_movement</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">current_transition</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>
+            <span class="n">current_transition</span> <span class="o">=</span> <span class="s2">"cut"</span>
             <span class="n">current_caption_lines</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">current_notes</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">current_notes</span> <span class="o">=</span> <span class="s2">""</span>
             <span class="n">current_images</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">start_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">))</span>
-                <span class="n">end_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"start"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">start_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"start"</span><span class="p">))</span>
+                <span class="n">end_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"end"</span><span class="p">))</span>
                 <span class="n">intervals</span><span class="p">[</span><span class="n">current_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="n">start_s</span><span class="p">,</span> <span class="n">end_s</span><span class="p">)</span>
             <span class="k">continue</span>
 
         <span class="k">if</span> <span class="n">in_top</span><span class="p">:</span>
             <span class="n">m</span> <span class="o">=</span> <span class="n">_TOP_FIELD_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
-                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"key"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"asset_id"</span><span class="p">:</span>
                     <span class="n">asset_id</span> <span class="o">=</span> <span class="n">_strip_code</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"style"</span><span class="p">:</span>
                     <span class="n">style</span> <span class="o">=</span> <span class="n">value</span>
-                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;aspect&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"aspect"</span><span class="p">:</span>
                     <span class="n">aspect</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">continue</span>
 
-        <span class="c1"># We&#39;re inside a panel.</span>
+        <span class="c1"># We're inside a panel.</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">_TOP_FIELD_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;shot&quot;</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"key"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"shot"</span><span class="p">:</span>
                 <span class="n">current_shot</span> <span class="o">=</span> <span class="n">_strip_code</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;framing&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"framing"</span><span class="p">:</span>
                 <span class="n">current_framing</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;camera&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"camera"</span><span class="p">:</span>
                 <span class="n">current_camera</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;shot_size&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"shot_size"</span><span class="p">:</span>
                 <span class="n">current_shot_size</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_SHOT_SIZES</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;angle&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"angle"</span><span class="p">:</span>
                 <span class="n">current_angle</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_ANGLES</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;movement&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"movement"</span><span class="p">:</span>
                 <span class="n">current_movement</span> <span class="o">=</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_MOVEMENTS</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;transition&quot;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"transition"</span><span class="p">:</span>
                 <span class="n">current_transition</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">continue</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="n">_IMG_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
-            <span class="n">cap</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;cap&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="n">src</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">cap</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"cap"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"src"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">current_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_image_from_src</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="n">cap</span><span class="p">))</span>
             <span class="k">continue</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="n">_NOTES_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
-            <span class="n">current_notes</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">current_notes</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">"text"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">continue</span>
 
         <span class="c1"># Otherwise: caption text.</span>
@@ -345,15 +345,15 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_strip_code</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;`&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;`&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"`"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"`"</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">s</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_image_from_src</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PanelImage</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;artifact:&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">PanelImage</span><span class="p">(</span><span class="n">artifact_id</span><span class="o">=</span><span class="n">src</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;artifact:&quot;</span><span class="p">)</span> <span class="p">:],</span> <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="s2">&quot;s3://&quot;</span><span class="p">,</span> <span class="s2">&quot;gs://&quot;</span><span class="p">)):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_image_from_src</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">caption</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PanelImage</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"artifact:"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">PanelImage</span><span class="p">(</span><span class="n">artifact_id</span><span class="o">=</span><span class="n">src</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">"artifact:"</span><span class="p">)</span> <span class="p">:],</span> <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"http://"</span><span class="p">,</span> <span class="s2">"https://"</span><span class="p">,</span> <span class="s2">"s3://"</span><span class="p">,</span> <span class="s2">"gs://"</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">PanelImage</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">PanelImage</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="n">caption</span><span class="p">)</span>
 
@@ -369,13 +369,13 @@
     <span class="n">storyboard</span><span class="p">:</span> <span class="n">Storyboard</span><span class="p">,</span>
     <span class="n">panel_intervals</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a self-contained HTML contact sheet.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Render a self-contained HTML contact sheet."""</span>
     <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;!doctype html&gt;&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;html&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&#39;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;title&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">title</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;Storyboard&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/title&gt;&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;style&gt;&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;!doctype html&gt;"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'&lt;html&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;'</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;title&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">title</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'Storyboard'</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/title&gt;"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;style&gt;"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"""</span>
 <span class="s2">body { font: 14px/1.4 -apple-system, system-ui, sans-serif; margin: 2rem; max-width: 980px; }</span>
 <span class="s2">h1 { margin-bottom: 0.25rem; }</span>
 <span class="s2">.meta { color: #555; margin-bottom: 1.5rem; }</span>
@@ -384,40 +384,40 @@
 <span class="s2">.panel-meta { color: #555; font-size: 0.9em; }</span>
 <span class="s2">.panel h3 { margin: 0 0 0.5rem; }</span>
 <span class="s2">.notes { color: #888; font-style: italic; margin-top: 0.5rem; }</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&quot;</span><span class="p">)</span>
+<span class="s2">"""</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/style&gt;&lt;/head&gt;&lt;body&gt;"</span><span class="p">)</span>
 
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;h1&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">title</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;Storyboard&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/h1&gt;&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;meta&quot;&gt;&#39;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;asset_id: &lt;code&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/code&gt;&quot;</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;h1&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">title</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'Storyboard'</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/h1&gt;"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'&lt;div class="meta"&gt;'</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"asset_id: &lt;code&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/code&gt;"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; · style: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; · aspect: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">aspect</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">" · style: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">" · aspect: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">aspect</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/div&gt;"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">panels</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;panel&quot;&gt;&#39;</span><span class="p">)</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;div&gt;&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'&lt;div class="panel"&gt;'</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;div&gt;"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">panel</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
-                <span class="n">ref</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">path</span> <span class="ow">or</span> <span class="n">img</span><span class="o">.</span><span class="n">url</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">ref</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">path</span> <span class="ow">or</span> <span class="n">img</span><span class="o">.</span><span class="n">url</span> <span class="ow">or</span> <span class="s2">""</span>
                 <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
                     <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">&#39;&lt;img src=&quot;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot; alt=&quot;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">caption</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">img</span><span class="o">.</span><span class="n">role</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span>
+                        <span class="sa">f</span><span class="s1">'&lt;img src="</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="si">}</span><span class="s1">" alt="</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">caption</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">img</span><span class="o">.</span><span class="n">role</span><span class="p">)</span><span class="si">}</span><span class="s1">"&gt;'</span>
                     <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;em&gt;(no image)&lt;/em&gt;&quot;</span><span class="p">)</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;em&gt;(no image)&lt;/em&gt;"</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/div&gt;"</span><span class="p">)</span>
 
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;div&gt;&quot;</span><span class="p">)</span>
-        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;panel </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;div&gt;"</span><span class="p">)</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"panel </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">panel_intervals</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span> <span class="ow">in</span> <span class="n">panel_intervals</span><span class="p">:</span>
             <span class="n">iv</span> <span class="o">=</span> <span class="n">panel_intervals</span><span class="p">[</span><span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="p">]</span>
-            <span class="n">head</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]s&quot;</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;h3&gt;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">&lt;/h3&gt;&quot;</span><span class="p">)</span>
+            <span class="n">head</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" [</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">iv</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">]s"</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;h3&gt;</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">&lt;/h3&gt;"</span><span class="p">)</span>
         <span class="n">meta_bits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span><span class="p">:</span>
-            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;shot &lt;code&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/code&gt;&quot;</span><span class="p">)</span>
+            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"shot &lt;code&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/code&gt;"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="p">:</span>
             <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span>
@@ -426,21 +426,21 @@
             <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">shot_size</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="p">:</span>
             <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">angle</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span> <span class="o">!=</span> <span class="s2">&quot;LOCKED&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">movement</span> <span class="o">!=</span> <span class="s2">"LOCKED"</span><span class="p">:</span>
             <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">movement</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="o">!=</span> <span class="s2">&quot;cut&quot;</span><span class="p">:</span>
-            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;transition: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="ow">and</span> <span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span> <span class="o">!=</span> <span class="s2">"cut"</span><span class="p">:</span>
+            <span class="n">meta_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"transition: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">transition_in</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">meta_bits</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;div class=&quot;panel-meta&quot;&gt;</span><span class="si">{</span><span class="s2">&quot; · &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">meta_bits</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/div&gt;&#39;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;div class="panel-meta"&gt;</span><span class="si">{</span><span class="s2">" · "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">meta_bits</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/div&gt;'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">caption</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;p&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">caption</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/p&gt;&quot;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;p&gt;</span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">caption</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/p&gt;"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;div class=&quot;notes&quot;&gt;notes: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/div&gt;&#39;</span><span class="p">)</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">)</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;div class="notes"&gt;notes: </span><span class="si">{</span><span class="n">_html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">panel</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/div&gt;'</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/div&gt;"</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/div&gt;"</span><span class="p">)</span>
 
-    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;/body&gt;&lt;/html&gt;&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;/body&gt;&lt;/html&gt;"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
 
 </pre></div>
 
