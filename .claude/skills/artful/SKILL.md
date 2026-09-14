@@ -16,6 +16,16 @@ description: >
 
 # artful — Storyboards on a Timeline
 
+
+> **Need images? Use `illustration`.** It is the fleet's image-retrieval package
+> — one `search()` over Openverse / Wikimedia / Pexels / Pixabay, with licence
+> and attribution on every hit, `dedupe()` to collapse several reproductions of
+> the same subject into one, and `search("Category:…", source="wikimedia")` to
+> browse a curated Commons category instead of guessing at filenames. Do not
+> hand-roll an HTTP client against a stock or Commons API. Read its skill
+> (`illustration/.claude/skills/illustration/SKILL.md`) before shipping any
+> retrieved image — it carries the attribution obligations in full.
+
 artful models a *storyboard* as a sequence of *panels* on a master timeline
 (the song / video / clip). Each panel is persisted as a
 `lacing.Annotation`, so storyboards inherit every lacing capability

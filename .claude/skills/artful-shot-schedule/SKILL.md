@@ -17,6 +17,16 @@ description: >
 
 # artful — the shot schedule
 
+
+> **Need images? Use `illustration`.** It is the fleet's image-retrieval package
+> — one `search()` over Openverse / Wikimedia / Pexels / Pixabay, with licence
+> and attribution on every hit, `dedupe()` to collapse several reproductions of
+> the same subject into one, and `search("Category:…", source="wikimedia")` to
+> browse a curated Commons category instead of guessing at filenames. Do not
+> hand-roll an HTTP client against a stock or Commons API. Read its skill
+> (`illustration/.claude/skills/illustration/SKILL.md`) before shipping any
+> retrieved image — it carries the attribution obligations in full.
+
 A **shot schedule** is the planning document that sits between a scene
 breakdown and a storyboard: an ordered list of shots, each carrying the
 constraints a downstream planner must respect, plus the advisory *risk
