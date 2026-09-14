@@ -62,6 +62,14 @@ lives on the lacing annotation's `reference` and is supplied separately at
 save time via `panel_intervals`. This is so storyboards travel naturally
 through lacing's interval-keyed surface.
 
+> **Rendering a panel's `caption` (or a source line, title, credits) onto the
+> frame is `tituli`'s job**, not artful's: `tituli.caption(text, attribution,
+> frame=tituli.Frame.from_image(still))` places it off the subject with the
+> right ink and scrim, and `tituli.bodies` registers
+> `annot://schema/text-overlay/v1` for the rendered overlay as a lacing
+> annotation on the image (the image↔segment pair follows `PanelBody`'s
+> precedent: interval on the segment, both parents in `was_derived_from`).
+
 ## Build a storyboard
 
 ```python
