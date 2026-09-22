@@ -90,7 +90,7 @@ doctest_optionflags = [
 ]
 
 [tool.wads.ci]
-project_name = ""
+project_name = "artful"
 
 [tool.wads.ci.commands]
 pre_test = []
