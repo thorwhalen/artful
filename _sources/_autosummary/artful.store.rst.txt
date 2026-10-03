@@ -1,0 +1,21 @@
+artful.store
+============
+
+.. automodule:: artful.store
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      load_storyboard
+      make_prov
+      panel_intervals_from_panels
+      save_storyboard
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      StoryboardMetaBody
+   

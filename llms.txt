@@ -1,0 +1,24 @@
+# artful
+
+> Storyboard data model and exporters — lacing-native panels along a timeline
+
+
+## Pages
+
+- [artful](index.html.md): Storyboard data model and exporters — lacing-native panels along a timeline.
+- [API reference](api.html.md): | &#96;artful&#96;   | artful — Storyboard data model and exporters.   |
+- [artful](_autosummary/artful.html.md): artful — Storyboard data model and exporters.
+- [artful.exports](_autosummary/artful.exports.html.md): Storyboard exporters: Markdown ↔ HTML ↔ Storyboard.
+- [artful.schema](_autosummary/artful.schema.html.md): Storyboard schema — typed Panels along a timeline, lacing-native.
+- [artful.shot_schedule](_autosummary/artful.shot_schedule.html.md): Shot schedule — an ordered, model-constraint-aware shot list.
+- [artful.store](_autosummary/artful.store.html.md): Round-trip a &#96;Storyboard&#96; through a lacing store.
+- [For AI agents](ai-agents.html.md): &#96;artful&#96; ships artifacts for coding agents alongside its code. This page lists
+- [About this build](about-this-build.html.md): This documentation was built on &#42;&#42;2026-10-03 07:50 UTC&#42;&#42; from commit &lt;a href="https://github.com/tho...
+
+## Optional
+
+- [artful.md](artful.md): Complete documentation in a single file.
+
+## Build
+
+- [build_info.json](build_info.json): build provenance (commit, version, tool versions, whether the docs match the package)

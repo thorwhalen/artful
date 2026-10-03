@@ -1,0 +1,46 @@
+﻿artful
+======
+
+.. automodule:: artful
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      from_markdown
+      load_shot_schedule
+      load_shot_schedules
+      load_storyboard
+      new_panel_id
+      new_schedule_id
+      new_shot_id
+      panel_intervals_from_panels
+      save_shot_schedule
+      save_storyboard
+      to_html
+      to_markdown
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ModelSheet
+      PanelBody
+      PanelImage
+      RiskFlag
+      ShotEntry
+      ShotScheduleBody
+      Storyboard
+      StoryboardMetaBody
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   exports
+   schema
+   shot_schedule
+   store

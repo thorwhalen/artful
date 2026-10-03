@@ -1,0 +1,34 @@
+artful.schema
+=============
+
+.. automodule:: artful.schema
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      ReviewStatus
+      MomentHeuristic
+      MomentTiming
+      ShotSize
+      Angle
+      Movement
+      DurationSource
+      ModelSheetView
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      new_panel_id
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ModelSheet
+      PanelBody
+      PanelImage
+      Storyboard
+   

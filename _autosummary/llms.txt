@@ -1,0 +1,16 @@
+# artful
+
+> Storyboard data model and exporters — lacing-native panels along a timeline
+
+
+## Pages in this subsection
+
+- [artful](artful.html.md): artful — Storyboard data model and exporters.
+- [artful.exports](artful.exports.html.md): Storyboard exporters: Markdown ↔ HTML ↔ Storyboard.
+- [artful.schema](artful.schema.html.md): Storyboard schema — typed Panels along a timeline, lacing-native.
+- [artful.shot_schedule](artful.shot_schedule.html.md): Shot schedule — an ordered, model-constraint-aware shot list.
+- [artful.store](artful.store.html.md): Round-trip a &#96;Storyboard&#96; through a lacing store.
+
+## Optional
+
+- [Top-level llms.txt](../llms.txt): Complete documentation index.
